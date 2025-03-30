@@ -1,6 +1,7 @@
 ﻿using CDPAutomation.Interfaces.CDP;
-using CDPAutomation.Interfaces.Models.Browser;
+using CDPAutomation.Interfaces.JavaScript;
 using CDPAutomation.Interfaces.Request;
+using CDPAutomation.Models.Browser;
 using CDPAutomation.Pages;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,7 @@ namespace CDPAutomation.Interfaces.Browser
         INavigate Navigate { get; }
         ICookie Cookies { get; }
         IRequest Request { get; }
+        IJavaScriptExecutor Javascript { get; }
 
         Task StartAsync(StartOption? option = null);
         Task CloseAsync();

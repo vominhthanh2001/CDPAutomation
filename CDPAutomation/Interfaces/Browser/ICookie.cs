@@ -1,4 +1,4 @@
-﻿using CDPAutomation.Interfaces.Models.Browser;
+﻿using CDPAutomation.Models.Browser;
 using System;
 using System.Collections.Generic;
 using System.Linq;

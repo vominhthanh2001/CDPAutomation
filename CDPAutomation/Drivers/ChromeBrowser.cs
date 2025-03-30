@@ -1,19 +1,29 @@
-﻿using CDPAutomation.Interfaces.Browser;
+﻿using CDPAutomation.Implementation;
+using CDPAutomation.Interfaces.Browser;
 using CDPAutomation.Interfaces.CDP;
-using CDPAutomation.Interfaces.Models.Browser;
+using CDPAutomation.Interfaces.JavaScript;
 using CDPAutomation.Interfaces.Request;
+using CDPAutomation.Models.Browser;
 using CDPAutomation.Pages;
 
 namespace CDPAutomation.Drivers
 {
     public class ChromeBrowser : IBrowser, IDisposable
     {
-        public ICDP CDP => throw new NotImplementedException();
-        public INavigate Navigate => throw new NotImplementedException();
+        public ICDP CDP { get; }
+        public INavigate Navigate { get; }
+        public ICookie Cookies { get; }
+        public IRequest Request { get; }
+        public IJavaScriptExecutor Javascript { get; }
 
-        public ICookie Cookies => throw new NotImplementedException();
-
-        public IRequest Request => throw new NotImplementedException();
+        public ChromeBrowser()
+        {
+            this.CDP = new CDPImplementation();
+            this.Navigate = new NavigateImplementation();
+            this.Cookies = new CookieImplementation();
+            this.Request = new RequestImplementation();
+            this.Javascript = new JavaScriptExecutorImplementation();
+        }
 
         public Task StartAsync(StartOption? option = null)
         {
@@ -39,7 +49,5 @@ namespace CDPAutomation.Drivers
         {
             throw new NotImplementedException();
         }
-
-
     }
 }

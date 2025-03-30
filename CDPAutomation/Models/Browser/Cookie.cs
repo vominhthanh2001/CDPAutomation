@@ -1,4 +1,4 @@
-﻿namespace CDPAutomation.Interfaces.Models.Browser
+﻿namespace CDPAutomation.Models.Browser
 {
     public class Cookie
     {

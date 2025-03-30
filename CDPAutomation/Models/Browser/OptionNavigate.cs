@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CDPAutomation.Interfaces.Models.Browser
+namespace CDPAutomation.Models.Browser
 {
     public class OptionNavigate
     {
