@@ -5,6 +5,10 @@ VisualStudioVersion = 17.13.35818.85 d17.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CDPAutomation", "CDPAutomation\CDPAutomation.csproj", "{EDABB134-2A53-4EE9-AC5D-D1BA530FC83F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CDPAutomation.Test", "CDPAutomation.Test\CDPAutomation.Test.csproj", "{DBD5E46F-7B8F-4BE4-BBC8-338B075CA611}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CDPAutomation.Application", "CDPAutomation.Application\CDPAutomation.Application.csproj", "{9E9264F2-9315-4E85-B24C-BD340651F634}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{EDABB134-2A53-4EE9-AC5D-D1BA530FC83F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EDABB134-2A53-4EE9-AC5D-D1BA530FC83F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EDABB134-2A53-4EE9-AC5D-D1BA530FC83F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DBD5E46F-7B8F-4BE4-BBC8-338B075CA611}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBD5E46F-7B8F-4BE4-BBC8-338B075CA611}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBD5E46F-7B8F-4BE4-BBC8-338B075CA611}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBD5E46F-7B8F-4BE4-BBC8-338B075CA611}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E9264F2-9315-4E85-B24C-BD340651F634}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E9264F2-9315-4E85-B24C-BD340651F634}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E9264F2-9315-4E85-B24C-BD340651F634}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E9264F2-9315-4E85-B24C-BD340651F634}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

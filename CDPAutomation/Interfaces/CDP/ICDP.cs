@@ -12,6 +12,7 @@ namespace CDPAutomation.Interfaces.CDP
         Task DisconnectAsync();
 
         Task SendAsync(string method, object? parameters = null);
+        Task<string?> SendInstant(string method, object? parameters = null);
         Task ListenAsync(string method, Func<object?, Task> callback);
     }
 }

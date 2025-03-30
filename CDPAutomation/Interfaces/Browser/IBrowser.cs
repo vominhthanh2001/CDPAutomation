@@ -1,4 +1,5 @@
 ﻿using CDPAutomation.Interfaces.CDP;
+using CDPAutomation.Interfaces.Fingerprint;
 using CDPAutomation.Interfaces.JavaScript;
 using CDPAutomation.Interfaces.Request;
 using CDPAutomation.Models.Browser;
@@ -15,9 +16,11 @@ namespace CDPAutomation.Interfaces.Browser
     {
         ICDP CDP { get; }
         INavigate Navigate { get; }
+        IWindow Window { get; }
         ICookie Cookies { get; }
         IRequest Request { get; }
         IJavaScriptExecutor Javascript { get; }
+        IFingerprint Fingerprint { get; }
 
         Task StartAsync(StartOption? option = null);
         Task CloseAsync();

@@ -1,6 +1,5 @@
 ﻿using CDPAutomation.Interfaces.Browser;
 using CDPAutomation.Interfaces.CDP;
-using CDPAutomation.Models.Browser;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,40 +8,35 @@ using System.Threading.Tasks;
 
 namespace CDPAutomation.Implementation
 {
-    public class CookieImplementation : ICookie
+    public class WindowImplementation : IWindow
     {
         private readonly ICDP _cdp;
-        public CookieImplementation(ICDP cdp)
+        public WindowImplementation(ICDP cdp)
         {
             _cdp = cdp;
         }
 
-        public Task AddCookieAsync(string name, string value, string domain, string path, DateTime? expiry = null)
+        public Task WindowFullScreen()
         {
             throw new NotImplementedException();
         }
 
-        public Task AddCookieAsync(Cookie? cookie)
+        public Task WindowMaximize()
         {
             throw new NotImplementedException();
         }
 
-        public Task AddCookieAsync(List<Cookie?>? cookies)
+        public Task WindowMinimize()
         {
             throw new NotImplementedException();
         }
 
-        public Task DeleteAllCookiesAsync()
+        public Task WindowPosition(int x, int y)
         {
             throw new NotImplementedException();
         }
 
-        public Task DeleteCookieAsync(string name)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<Cookie>> GetCookiesAsync()
+        public Task WindowSize(int width, int height)
         {
             throw new NotImplementedException();
         }

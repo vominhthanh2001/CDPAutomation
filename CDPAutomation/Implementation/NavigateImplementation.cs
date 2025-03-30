@@ -1,4 +1,5 @@
 ﻿using CDPAutomation.Interfaces.Browser;
+using CDPAutomation.Interfaces.CDP;
 using CDPAutomation.Models.Browser;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,12 @@ namespace CDPAutomation.Implementation
 {
     public class NavigateImplementation : INavigate
     {
+        private readonly ICDP _cdp;
+        public NavigateImplementation(ICDP cdp)
+        {
+            _cdp = cdp;
+        }
+
         public Task GoToBackAsync(OptionNavigate? option = null)
         {
             throw new NotImplementedException();

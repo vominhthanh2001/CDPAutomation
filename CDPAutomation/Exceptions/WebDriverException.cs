@@ -20,9 +20,5 @@ namespace CDPAutomation.Exceptions
         public WebDriverException(string? message, Exception? innerException) : base(message, innerException)
         {
         }
-
-        protected WebDriverException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
     }
 }
