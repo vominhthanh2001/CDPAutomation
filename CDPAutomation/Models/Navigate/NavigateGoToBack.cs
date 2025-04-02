@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CDPAutomation.Pages
+namespace CDPAutomation.Models.Navigate
 {
-    public interface IPage
+    public class  NavigateGoToBack
     {
     }
 }

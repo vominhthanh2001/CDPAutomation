@@ -1,5 +1,8 @@
 ﻿using CDPAutomation.Models.Browser;
 using CDPAutomation.Models.CDP;
+using CDPAutomation.Models.FindElement;
+using CDPAutomation.Models.Navigate;
+using CDPAutomation.Models.Page;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
@@ -11,17 +14,48 @@ namespace CDPAutomation.Helpers
     [JsonSerializable(typeof(int))]
     [JsonSerializable(typeof(string))]
     [JsonSerializable(typeof(object))]
+    [JsonSerializable(typeof(Dictionary<string, object>))]
     [JsonSerializable(typeof(JsonElement))]
     [JsonSerializable(typeof(JsonDocument))]
-    [JsonSerializable(typeof(DebuggerBrowser))]
-    [JsonSerializable(typeof(DebuggerPage))]
-    [JsonSerializable(typeof(List<DebuggerPage>))]
+
+    #region Navigate
+    [JsonSerializable(typeof(NavigateGotoUrl))]
+    [JsonSerializable(typeof(NavigateGoToBack))]
+    [JsonSerializable(typeof(NavigateGoToForward))]
+    [JsonSerializable(typeof(NavigateRefresh))]
+    [JsonSerializable(typeof(NavigationHistoryResponse))]
+    #endregion
+
+    #region Browser
+    [JsonSerializable(typeof(Cookie))]
+    [JsonSerializable(typeof(CookieResponseResult))]
+    [JsonSerializable(typeof(CookieResponse))]
+    [JsonSerializable(typeof(CookieParams))]
+    [JsonSerializable(typeof(DebuggerBrowserResponse))]
+    [JsonSerializable(typeof(DebuggerPageResponse))]
+    [JsonSerializable(typeof(List<DebuggerPageResponse>))]
+    #endregion
+
+    #region CDP
     [JsonSerializable(typeof(CDPRequest))]
     [JsonSerializable(typeof(CDPResponse))]
     [JsonSerializable(typeof(CDPError))]
+    #endregion
+
+    #region Page
+    [JsonSerializable(typeof(TargetPages))]
+    [JsonSerializable(typeof(TargetInfo))]
+    [JsonSerializable(typeof(ActivateTargetParams))]
+    [JsonSerializable(typeof(CloseTargetParams))]
+    [JsonSerializable(typeof(CreateTargetParams))]
+    #endregion
+
+    #region FindElement
+    [JsonSerializable(typeof(FindElementSelectorParams))]
+    #endregion
     public partial class JsonContext : JsonSerializerContext { }
 
-    public static class JsonHelper
+    internal static class JsonHelper
     {
         private static readonly JsonSerializerOptions _options = new()
         {

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CDPAutomation.Helpers
 {
-    public class ProcessResult
+    internal class ProcessResult
     {
         public Process? Process { get; set; }
         public int? ProcessId
@@ -26,9 +26,9 @@ namespace CDPAutomation.Helpers
         public int? ProcessExitCodeError { get; set; }
     }
 
-    public class ProcessHelper
+    internal static class ProcessHelper
     {
-        public static ProcessResult? Execute(string filename, string command, bool isWaitForExit = true)
+        internal static ProcessResult? Execute(string filename, string command, bool isWaitForExit = true)
         {
             try
             {
@@ -107,12 +107,12 @@ namespace CDPAutomation.Helpers
             return default;
         }
 
-        public static ProcessResult? CurlExecute(string command, bool isWaitForExit = true)
+        internal static ProcessResult? CurlExecute(string command, bool isWaitForExit = true)
         {
             return Execute("curl", command, isWaitForExit);
         }
 
-        public static ProcessResult? CmdExecute(string command, bool isWaitForExit = true)
+        internal static ProcessResult? CmdExecute(string command, bool isWaitForExit = true)
         {
             return Execute("cmd", command, isWaitForExit);
         }

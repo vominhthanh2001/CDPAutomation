@@ -1,12 +1,16 @@
-﻿using CDPAutomation.Helpers;
+﻿using CDPAutomation.Extensions;
+using CDPAutomation.Helpers;
 using CDPAutomation.Implementation;
 using CDPAutomation.Interfaces.Browser;
 using CDPAutomation.Interfaces.CDP;
+using CDPAutomation.Interfaces.FindElement;
 using CDPAutomation.Interfaces.Fingerprint;
 using CDPAutomation.Interfaces.JavaScript;
+using CDPAutomation.Interfaces.Pages;
 using CDPAutomation.Interfaces.Request;
 using CDPAutomation.Models.Browser;
-using CDPAutomation.Pages;
+using CDPAutomation.Models.CDP;
+using CDPAutomation.Models.Page;
 
 namespace CDPAutomation.Drivers
 {
@@ -16,27 +20,27 @@ namespace CDPAutomation.Drivers
         private ProcessResult? _processDebuggerPage;
         private ProcessResult? _processDebuggerBrowser;
         private StartOption? _option;
-        private List<DebuggerPage>? _debuggerListPage;
-        private DebuggerPage? _debuggerPageMain => _debuggerListPage?.FirstOrDefault(x => x.Type == "page");
-        private DebuggerBrowser? _debuggerBrowser;
+        private List<DebuggerPageResponse>? _debuggerListPage;
+        private DebuggerPageResponse? _debuggerPageMain => _debuggerListPage?.FirstOrDefault(x => x.Type == "page");
+        private DebuggerBrowserResponse? _debuggerBrowser;
 
         public ICDP CDP { get; }
-        public INavigate Navigate { get; }
-        public IWindow Window { get; }
-        public ICookie Cookies { get; }
-        public IRequest Request { get; }
-        public IJavaScriptExecutor Javascript { get; }
 
+        private IPage? _pageTarget = default;
+        public IPage? PageTarget
+        {
+            get => _pageTarget;
+            set
+            {
+                _pageTarget = value;
+                _pageTarget?.ActivateAsync().Wait();
+            }
+        }
         public IFingerprint Fingerprint { get; }
 
         public ChromeBrowser()
         {
             this.CDP = new CDPImplementation();
-            this.Navigate = new NavigateImplementation(this.CDP);
-            this.Window = new WindowImplementation(this.CDP);
-            this.Cookies = new CookieImplementation(this.CDP);
-            this.Request = new RequestImplementation(this.CDP);
-            this.Javascript = new JavaScriptExecutorImplementation(this.CDP);
             this.Fingerprint = new FingerprintImplementation(this.CDP);
         }
 
@@ -96,14 +100,17 @@ namespace CDPAutomation.Drivers
             _processDebuggerBrowser = ProcessHelper.CurlExecute($"http://localhost:{port}/json/version", true) ?? throw new Exception("Can not get json version");
             if (_processDebuggerBrowser.Process is null) throw new Exception("Can not get json version");
             if (_processDebuggerBrowser.ProcessExitCode != 0) throw new Exception("Can not get json version");
-            _debuggerBrowser = JsonHelper.Deserialize<DebuggerBrowser>(_processDebuggerBrowser.Output ?? string.Empty, jsonTypeInfo: JsonContext.Default.DebuggerBrowser) ?? throw new Exception("Can not deserialize json version");
+            _debuggerBrowser = JsonHelper.Deserialize<DebuggerBrowserResponse>(_processDebuggerBrowser.Output ?? string.Empty, jsonTypeInfo: (System.Text.Json.Serialization.Metadata.JsonTypeInfo<DebuggerBrowserResponse>)JsonContext.Default.DebuggerBrowserResponse) ?? throw new Exception("Can not deserialize json version");
 
             _processDebuggerPage = ProcessHelper.CurlExecute($"http://localhost:{port}/json", true) ?? throw new Exception("Can not get json");
             if (_processDebuggerPage.Process is null) throw new Exception("Can not get json");
             if (_processDebuggerPage.ProcessExitCode != 0) throw new Exception("Can not get json");
-            _debuggerListPage = JsonHelper.Deserialize<List<DebuggerPage>>(_processDebuggerPage.Output ?? string.Empty, jsonTypeInfo: JsonContext.Default.ListDebuggerPage) ?? throw new Exception("Can not deserialize json");
+            _debuggerListPage = JsonHelper.Deserialize<List<DebuggerPageResponse>>(_processDebuggerPage.Output ?? string.Empty, jsonTypeInfo: (System.Text.Json.Serialization.Metadata.JsonTypeInfo<List<DebuggerPageResponse>>)JsonContext.Default.ListDebuggerPageResponse) ?? throw new Exception("Can not deserialize json");
 
-            await this.CDP.ConnectAsync(_debuggerBrowser.WebSocketDebuggerUrl);
+            await this.CDP.ConnectAsync(_debuggerPageMain?.WebSocketDebuggerUrl);
+
+            List<IPage> pages = await this.Pages();
+            this.PageTarget = pages.FirstOrDefault() ?? throw new Exception("Can not get page target");
 
             await this.Fingerprint.InitializeAsync();
         }
@@ -132,30 +139,61 @@ namespace CDPAutomation.Drivers
                 }
             }
 
+            _processInitializeBrowser?.Process?.Dispose();
+            _processDebuggerPage?.Process?.Dispose();
+            _processDebuggerBrowser?.Process?.Dispose();
+
             return Task.CompletedTask;
         }
 
         public void Dispose()
         {
-            _processInitializeBrowser?.Process?.Dispose();
-            _processDebuggerPage?.Process?.Dispose();
-            _processDebuggerBrowser?.Process?.Dispose();
-
+            CloseAsync().Wait();
             GC.SuppressFinalize(this);
-        }
-
-        public Task<IPage> NewPageAsync()
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<List<IPage>> Pages()
         {
-            string? test = await this.CDP.SendInstant(
-                method: "Target.getTargets",
-                parameters: new object());
+            List<TargetInfo> targetInfos = await this.CDP.GetPagesInfoAsync();
+            List<IPage> pages = targetInfos.Select(t => (IPage)new PageImplementation(this.CDP, t)).ToList();
+            return pages;
+        }
 
-            return new List<IPage>();
+        public async Task<IPage> NewPageAsync()
+        {
+            string? createTarget = await this.CDP.SendInstantAsync(
+                method: "Target.createTarget",
+                parameters: new CreateTargetParams { Url = "about:blank" });
+            if (createTarget is not null)
+            {
+                CDPResponse? response = JsonHelper.Deserialize(createTarget, JsonContext.Default.CDPResponse);
+                if (response is null || response?.Result is null) throw new Exception("Can not create target");
+
+                TargetInfo? targetInfo = JsonHelper.Deserialize(response?.Result?.ToString() ?? throw new Exception(), JsonContext.Default.TargetInfo);
+                if (targetInfo is null) throw new Exception("Can not create target");
+
+                return (IPage)new PageImplementation(this.CDP, targetInfo);
+            }
+            throw new Exception("Can not create target");
+        }
+
+        public Task SwitchPage(IPage? page)
+        {
+            ArgumentNullException.ThrowIfNull(page);
+
+            page.ActivateAsync();
+
+            return Task.CompletedTask;
+        }
+
+        public async Task SwitchPage(int? index)
+        {
+            ArgumentNullException.ThrowIfNull(index);
+
+            List<IPage> pages = await this.Pages();
+            if (pages.Count < index) throw new Exception("Index out of range");
+
+            await pages[index.Value].ActivateAsync();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using CDPAutomation.Helpers;
+using CDPAutomation.Implementation.Events;
 using CDPAutomation.Interfaces.CDP;
 using CDPAutomation.Models.CDP;
 using System;
@@ -7,14 +8,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Websocket.Client;
 
 namespace CDPAutomation.Implementation
 {
-    public class CDPImplementation : ICDP
+    public class CDPImplementation : CDPEventImplementation, ICDP
     {
-        internal static ConcurrentDictionary<int, TaskCompletionSource<string>> _responseTasks = new();
+        public ConcurrentDictionary<int, TaskCompletionSource<string>> ResponseTasks
+        {
+            get { return _responseTasks; }
+            set { _responseTasks = value; }
+        }
 
         private WebsocketClient? _websocketClient;
 
@@ -23,6 +29,9 @@ namespace CDPAutomation.Implementation
             if (string.IsNullOrWhiteSpace(webSocket)) throw new ArgumentNullException(nameof(webSocket));
             _websocketClient = new(new Uri(webSocket));
             await _websocketClient.Start();
+
+            _ = _websocketClient.MessageReceived.Subscribe(message => OnMessageReceivedResponseEvent(message?.Text ?? string.Empty));
+            _ = _websocketClient.MessageReceived.Subscribe(message => OnMessageReceivedWaitMethodEvent(message?.Text ?? string.Empty));
         }
 
         public async Task DisconnectAsync()
@@ -32,48 +41,15 @@ namespace CDPAutomation.Implementation
             await _websocketClient.Stop(WebSocketCloseStatus.NormalClosure, "Disconnect");
         }
 
-        public Task ListenAsync(string method, Func<object?, Task> callback)
-        {
-            if (_websocketClient is null) throw new Exception("WebSocketClient is null");
-
-            _ =_websocketClient.MessageReceived.Subscribe(async message =>
-            {
-                string? json = message.Text;
-                if (json is null) return;
-                string? methodName = JsonHelper.GetProperty(json, "method");
-                if (methodName is null) return;
-                if (methodName == method)
-                {
-                    object? parameters = JsonHelper.GetProperty(json, "params");
-                    await callback(parameters);
-                }
-
-                // Lấy id của message để trả về kết quả cho message
-                string? id = JsonHelper.GetProperty(json, "id");
-                if (id is null) return;
-
-                if (_responseTasks.TryRemove(int.Parse(id), out TaskCompletionSource<string>? task))
-                {
-                    if (task is null) return;
-
-                    task.SetResult(json);
-                }
-
-            });
-            return Task.CompletedTask;
-
-        }
-
         public Task SendAsync(string method, object? parameters = null)
         {
             if (_websocketClient is null) throw new Exception("WebSocketClient is null");
-            if (parameters is null) return Task.CompletedTask;
 
-            var message = new
+            var message = new CDPRequest
             {
-                id = CDPHelper.GetMessageId(),
-                method = method,
-                @params = parameters
+                Id = CDPHelper.GetMessageId(),
+                Method = method,
+                Params = parameters
             };
 
             string? json = JsonHelper.Serialize(message);
@@ -83,10 +59,9 @@ namespace CDPAutomation.Implementation
             return Task.CompletedTask;
         }
 
-        public async Task<string?> SendInstant(string method, object? parameters = null)
+        public async Task<string?> SendInstantAsync(string method, object? parameters = null)
         {
             if (_websocketClient is null) throw new Exception("WebSocketClient is null");
-            if (parameters is null) return default;
 
             var message = new CDPRequest
             {
@@ -105,6 +80,34 @@ namespace CDPAutomation.Implementation
             string resultTask = await taskCompletionSource.Task;
 
             return resultTask;
+        }
+
+        public async Task<bool> WaitMethodAsync(string method, int? timeout)
+        {
+            if (method == null) throw new ArgumentNullException(nameof(method));
+            if (timeout is null) timeout = 60;
+
+            var tcs = new TaskCompletionSource<bool>();
+            _waitingEvents[method] = tcs;
+
+            // Timeout nếu sự kiện không xảy ra trong khoảng thời gian giới hạn
+            var timeoutTask = Task.Delay(timeout.Value * 1000);
+            var completedTask = await Task.WhenAny(tcs.Task, timeoutTask);
+
+            _waitingEvents.TryRemove(method, out _);
+
+            return completedTask == tcs.Task;
+
+        }
+
+        public Task<TaskCompletionSource<string>> GetTaskCompletionSourceAsync(int id)
+        {
+            if (_responseTasks.TryGetValue(id, out TaskCompletionSource<string>? task))
+            {
+                return Task.FromResult(task);
+            }
+
+            return Task.FromResult(new TaskCompletionSource<string>());
         }
     }
 }

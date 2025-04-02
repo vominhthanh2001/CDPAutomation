@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CDPAutomation.Helpers
 {
-    public class BrowserHelper
+    internal static class BrowserHelper
     {
         internal static int? GetFreePort()
         {

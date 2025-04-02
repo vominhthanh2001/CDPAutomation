@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace CDPAutomation.Helpers
 {
-    public class CDPHelper
+    internal static class CDPHelper
     {
-        public static int GetMessageId()
+        internal static int GetMessageId()
         {
             return new Random().Next(int.MinValue, int.MaxValue);
         }

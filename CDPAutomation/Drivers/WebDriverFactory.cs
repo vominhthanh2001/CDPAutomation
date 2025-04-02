@@ -21,11 +21,9 @@ namespace CDPAutomation.Factorys
                     browser = new ChromeBrowser();
                     break;
                 case WebDriverMode.Firefox:
-                    browser = new FirefoxBrowser();
-                    break;
+                    throw new WebDriverException("WebDriver is not supported.");
                 case WebDriverMode.Edge:
-                    browser = new EdgeBrowser();
-                    break;
+                    throw new WebDriverException("WebDriver is not supported.");
                 case WebDriverMode.Safari:
                     throw new WebDriverException("WebDriver is not supported.");
                 case WebDriverMode.Opera:

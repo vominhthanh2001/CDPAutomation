@@ -1,6 +1,8 @@
-﻿using CDPAutomation.Interfaces.Browser;
+﻿using CDPAutomation.Helpers;
+using CDPAutomation.Interfaces.Browser;
 using CDPAutomation.Interfaces.CDP;
 using CDPAutomation.Models.Browser;
+using CDPAutomation.Models.Navigate;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,24 +19,71 @@ namespace CDPAutomation.Implementation
             _cdp = cdp;
         }
 
-        public Task GoToBackAsync(OptionNavigate? option = null)
+        public async Task GoToBackAsync(OptionNavigate? option = null)
         {
-            throw new NotImplementedException();
+            string? canGoBack = await _cdp.SendInstantAsync(
+                method: "Page.getNavigationHistory");
+
+            if (canGoBack is null) return;
+
+            NavigationHistoryResponse? navigationHistoryResponse = JsonHelper.Deserialize(canGoBack, JsonContext.Default.NavigationHistoryResponse);
+            if (navigationHistoryResponse is null || navigationHistoryResponse?.Result is null) return;
+
+            NavigationHistoryResult result = navigationHistoryResponse.Result;
+            int currentIndex = result.CurrentIndex;
+            if (currentIndex < 0) return;
+
+            var entries = result.Entries;
+            if (entries is null) return;
+            if (currentIndex - 1 < 0) return;
+
+            string? url = entries?[currentIndex - 1].Url;
+            if (url is null) return;
+
+            await GoToUrlAsync(url, option);
         }
 
-        public Task GoToForwardAsync(OptionNavigate? option = null)
+        public async Task GoToForwardAsync(OptionNavigate? option = null)
         {
-            throw new NotImplementedException();
+            string? canGoBack = await _cdp.SendInstantAsync(
+                method: "Page.getNavigationHistory");
+
+            if (canGoBack is null) return;
+
+            NavigationHistoryResponse? navigationHistoryResponse = JsonHelper.Deserialize(canGoBack, JsonContext.Default.NavigationHistoryResponse);
+            if (navigationHistoryResponse is null || navigationHistoryResponse?.Result is null) return;
+
+            NavigationHistoryResult result = navigationHistoryResponse.Result;
+            int currentIndex = result.CurrentIndex;
+            if (currentIndex < 0) return;
+
+            var entries = result.Entries;
+            if (entries is null) return;
+            if (currentIndex + 1 >= entries.Count) return;
+
+            string? url = entries?[currentIndex + 1].Url;
+            if (url is null) return;
+
+            await GoToUrlAsync(url, option);
         }
 
-        public Task GoToUrlAsync(string url, OptionNavigate? option = null)
+        public async Task GoToUrlAsync(string url, OptionNavigate? option = null)
         {
-            throw new NotImplementedException();
+            await _cdp.SendInstantAsync(
+                method: "Page.navigate",
+                parameters: new NavigateGotoUrl { Url = url });
+
+            if (option is null) return;
+            if (option.WaitUntilPageLoad) await _cdp.WaitMethodAsync("Page.frameStoppedLoading", option.Timeout);
         }
 
-        public Task RefreshAsync(OptionNavigate? option = null)
+        public async Task RefreshAsync(OptionNavigate? option = null)
         {
-            throw new NotImplementedException();
+            await _cdp.SendAsync(
+                method: "Page.reload");
+
+            if (option is null) return;
+            if (option.WaitUntilPageLoad) await _cdp.WaitMethodAsync("Page.frameStoppedLoading", option.Timeout);
         }
     }
 }

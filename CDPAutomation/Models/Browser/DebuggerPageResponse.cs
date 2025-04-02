@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CDPAutomation.Models.Browser
 {
-    public class DebuggerPage
+    public class DebuggerPageResponse
     {
         [JsonPropertyName("description")]
         public string? Description { get; set; }

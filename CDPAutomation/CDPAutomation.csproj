@@ -11,8 +11,4 @@
 		<PackageReference Include="Websocket.Client" Version="5.1.2" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<Folder Include="Interfaces\Events\" />
-	</ItemGroup>
-
 </Project>
