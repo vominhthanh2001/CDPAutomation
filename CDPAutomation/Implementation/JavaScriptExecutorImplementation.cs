@@ -1,5 +1,6 @@
 ﻿using CDPAutomation.Interfaces.CDP;
 using CDPAutomation.Interfaces.JavaScript;
+using CDPAutomation.Models.JavaScript;
 
 namespace CDPAutomation.Implementation
 {
@@ -11,14 +12,14 @@ namespace CDPAutomation.Implementation
             _cdp = cdp;
         }
         
-        public Task ExecuteJavaScriptAsync(string script)
+        public async Task ExecuteJavaScriptAsync(string script)
         {
-            throw new NotImplementedException();
-        }
+            JavaScriptParams javaScriptParams = new JavaScriptParams
+            {
+                Expression = script
+            };
 
-        public Task<T> ExecuteJavaScriptAsync<T>(string script)
-        {
-            throw new NotImplementedException();
+            await _cdp.SendAsync("Runtime.evaluate", javaScriptParams);
         }
     }
 }

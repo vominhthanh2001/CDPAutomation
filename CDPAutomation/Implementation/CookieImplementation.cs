@@ -48,7 +48,7 @@ namespace CDPAutomation.Implementation
                 value: cookie.Value!,
                 domain: cookie.Domain!,
                 path: cookie.Path!,
-                expiry: cookie.Expires is null ? null : DateTimeHelper.UnixTimeStampToDateTime(cookie.Expires.Value));
+                expiry: DateTime.Now.AddHours(24));
 
             return Task.CompletedTask;
         }

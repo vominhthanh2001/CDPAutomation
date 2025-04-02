@@ -1,8 +1,13 @@
 ﻿using CDPAutomation.Models.Browser;
 using CDPAutomation.Models.CDP;
 using CDPAutomation.Models.FindElement;
+using CDPAutomation.Models.JavaScript;
 using CDPAutomation.Models.Navigate;
 using CDPAutomation.Models.Page;
+using CDPAutomation.Models.Window;
+using CDPAutomation.Models.Window.FullScreen;
+using CDPAutomation.Models.Window.Maximize;
+using CDPAutomation.Models.Window.Minimize;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
@@ -52,6 +57,22 @@ namespace CDPAutomation.Helpers
 
     #region FindElement
     [JsonSerializable(typeof(FindElementSelectorParams))]
+    #endregion
+
+    #region JavaScript
+    [JsonSerializable(typeof(JavaScriptParams))]
+    #endregion
+
+    #region Window
+    [JsonSerializable(typeof(WindowParams))]
+    [JsonSerializable(typeof(WindowBoundsParams))]
+    [JsonSerializable(typeof(WindowResponse))]
+    [JsonSerializable(typeof(WindowBounds))]
+    [JsonSerializable(typeof(WindowResult))]
+    [JsonSerializable(typeof(WindowFullScreenParams))]
+    [JsonSerializable(typeof(WindowMaximizeParams))]
+    [JsonSerializable(typeof(WindowMinimizeParams))]
+    [JsonSerializable(typeof(WindowRestoreNomarlParams))]
     #endregion
     public partial class JsonContext : JsonSerializerContext { }
 

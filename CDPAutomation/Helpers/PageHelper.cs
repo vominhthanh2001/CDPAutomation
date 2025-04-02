@@ -3,6 +3,7 @@ using CDPAutomation.Interfaces.CDP;
 using CDPAutomation.Interfaces.Pages;
 using CDPAutomation.Models.CDP;
 using CDPAutomation.Models.Page;
+using CDPAutomation.Models.Window;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -86,6 +87,23 @@ namespace CDPAutomation.Helpers
             }
 
             return new List<TargetInfo>();
+        }
+
+        internal static async Task<WindowResponse> GetWindowTarget(this ICDP cdp)
+        {
+            string? getWindowForTarget = await cdp.SendInstantAsync("Browser.getWindowForTarget");
+            ArgumentNullException.ThrowIfNull(getWindowForTarget);
+
+            WindowResponse? windowResponse = JsonHelper.Deserialize(getWindowForTarget, JsonContext.Default.WindowResponse);
+            ArgumentNullException.ThrowIfNull(windowResponse);
+
+            ArgumentNullException.ThrowIfNull(windowResponse);
+            ArgumentNullException.ThrowIfNull(windowResponse.Result);
+            ArgumentNullException.ThrowIfNull(windowResponse.Result.Bounds);
+            ArgumentNullException.ThrowIfNull(windowResponse.Result.Bounds.Top);
+            ArgumentNullException.ThrowIfNull(windowResponse.Result.Bounds.Left);
+
+            return windowResponse;
         }
     }
 }

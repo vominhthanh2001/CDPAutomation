@@ -9,6 +9,5 @@ namespace CDPAutomation.Interfaces.JavaScript
     public interface IJavaScriptExecutor
     {
         Task ExecuteJavaScriptAsync(string script);
-        Task<T> ExecuteJavaScriptAsync<T>(string script);
     }
 }
