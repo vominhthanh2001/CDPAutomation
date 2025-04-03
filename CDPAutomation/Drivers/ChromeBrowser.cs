@@ -1,16 +1,10 @@
-﻿using CDPAutomation.Extensions;
-using CDPAutomation.Helpers;
+﻿using CDPAutomation.Helpers;
 using CDPAutomation.Implementation;
 using CDPAutomation.Interfaces.Browser;
 using CDPAutomation.Interfaces.CDP;
-using CDPAutomation.Interfaces.FindElement;
 using CDPAutomation.Interfaces.Fingerprint;
-using CDPAutomation.Interfaces.JavaScript;
 using CDPAutomation.Interfaces.Pages;
-using CDPAutomation.Interfaces.Request;
 using CDPAutomation.Models.Browser;
-using CDPAutomation.Models.CDP;
-using CDPAutomation.Models.Page;
 
 namespace CDPAutomation.Drivers
 {
@@ -36,12 +30,10 @@ namespace CDPAutomation.Drivers
                 _pageTarget?.ActivateAsync().Wait();
             }
         }
-        public IFingerprint Fingerprint { get; }
 
         public ChromeBrowser()
         {
             this.CDP = new CDPImplementation();
-            this.Fingerprint = new FingerprintImplementation(this.CDP);
         }
 
         public async Task StartAsync(StartOption? option = null)
@@ -88,6 +80,7 @@ namespace CDPAutomation.Drivers
                 "--disable-sync", // Vô hiệu hóa đồng bộ hóa
                 "--disable-web-security", // Vô hiệu hóa bảo mật web
                 //"--user-agent=\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.6998.178 Safari/537.36\"" // Đặt chuỗi user-agent
+                "--enable-unsafe-swiftshader"
             });
 
             // kiểm tra nếu không có đường dẫn thực thi thì lấy đường dẫn mặc định
@@ -100,19 +93,14 @@ namespace CDPAutomation.Drivers
             _processDebuggerBrowser = ProcessHelper.CurlExecute($"http://localhost:{port}/json/version", true) ?? throw new Exception("Can not get json version");
             if (_processDebuggerBrowser.Process is null) throw new Exception("Can not get json version");
             if (_processDebuggerBrowser.ProcessExitCode != 0) throw new Exception("Can not get json version");
-            _debuggerBrowser = JsonHelper.Deserialize<DebuggerBrowserResponse>(_processDebuggerBrowser.Output ?? string.Empty, jsonTypeInfo: (System.Text.Json.Serialization.Metadata.JsonTypeInfo<DebuggerBrowserResponse>)JsonContext.Default.DebuggerBrowserResponse) ?? throw new Exception("Can not deserialize json version");
+            _debuggerBrowser = JsonHelper.Deserialize(_processDebuggerBrowser.Output ?? string.Empty, jsonTypeInfo: JsonContext.Default.DebuggerBrowserResponse) ?? throw new Exception("Can not deserialize json version");
 
             _processDebuggerPage = ProcessHelper.CurlExecute($"http://localhost:{port}/json", true) ?? throw new Exception("Can not get json");
             if (_processDebuggerPage.Process is null) throw new Exception("Can not get json");
             if (_processDebuggerPage.ProcessExitCode != 0) throw new Exception("Can not get json");
-            _debuggerListPage = JsonHelper.Deserialize<List<DebuggerPageResponse>>(_processDebuggerPage.Output ?? string.Empty, jsonTypeInfo: (System.Text.Json.Serialization.Metadata.JsonTypeInfo<List<DebuggerPageResponse>>)JsonContext.Default.ListDebuggerPageResponse) ?? throw new Exception("Can not deserialize json");
+            var test = JsonHelper.Deserialize(_processDebuggerPage.Output ?? string.Empty, jsonTypeInfo: JsonContext.Default.DebuggerPageResponse) ?? throw new Exception("Can not deserialize json");
 
             await this.CDP.ConnectAsync(_debuggerPageMain?.WebSocketDebuggerUrl);
-
-            List<IPage> pages = await this.Pages();
-            this.PageTarget = pages.FirstOrDefault() ?? throw new Exception("Can not get page target");
-
-            await this.Fingerprint.InitializeAsync();
         }
 
         public Task CloseAsync()
@@ -152,48 +140,24 @@ namespace CDPAutomation.Drivers
             GC.SuppressFinalize(this);
         }
 
-        public async Task<List<IPage>> Pages()
+        public Task<List<IPage>> Pages()
         {
-            List<TargetInfo> targetInfos = await this.CDP.GetPagesInfoAsync();
-            List<IPage> pages = targetInfos.Select(t => (IPage)new PageImplementation(this.CDP, t)).ToList();
-            return pages;
+            throw new NotImplementedException();
         }
 
-        public async Task<IPage> NewPageAsync()
+        public Task<IPage> NewPageAsync()
         {
-            string? createTarget = await this.CDP.SendInstantAsync(
-                method: "Target.createTarget",
-                parameters: new CreateTargetParams { Url = "about:blank" });
-            if (createTarget is not null)
-            {
-                CDPResponse? response = JsonHelper.Deserialize(createTarget, JsonContext.Default.CDPResponse);
-                if (response is null || response?.Result is null) throw new Exception("Can not create target");
-
-                TargetInfo? targetInfo = JsonHelper.Deserialize(response?.Result?.ToString() ?? throw new Exception(), JsonContext.Default.TargetInfo);
-                if (targetInfo is null) throw new Exception("Can not create target");
-
-                return (IPage)new PageImplementation(this.CDP, targetInfo);
-            }
-            throw new Exception("Can not create target");
+            throw new NotImplementedException();
         }
 
         public Task SwitchPage(IPage? page)
         {
-            ArgumentNullException.ThrowIfNull(page);
-
-            page.ActivateAsync();
-
-            return Task.CompletedTask;
+            throw new NotImplementedException();
         }
 
-        public async Task SwitchPage(int? index)
+        public Task SwitchPage(int? index)
         {
-            ArgumentNullException.ThrowIfNull(index);
-
-            List<IPage> pages = await this.Pages();
-            if (pages.Count < index) throw new Exception("Index out of range");
-
-            await pages[index.Value].ActivateAsync();
+            throw new NotImplementedException();
         }
     }
 }

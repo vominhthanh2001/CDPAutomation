@@ -30,5 +30,4 @@ namespace CDPAutomation.Models.CDP
         [JsonPropertyName("data")]
         public object? Data { get; set; }
     }
-
 }

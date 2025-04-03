@@ -59,7 +59,7 @@ namespace CDPAutomation.Implementation
             return Task.CompletedTask;
         }
 
-        public async Task<string?> SendInstantAsync(string method, object? parameters = null)
+        public async Task<CDPResponse?> SendInstantAsync(string method, object? parameters = null)
         {
             if (_websocketClient is null) throw new Exception("WebSocketClient is null");
 
@@ -79,7 +79,8 @@ namespace CDPAutomation.Implementation
             await _websocketClient.SendInstant(json);
             string resultTask = await taskCompletionSource.Task;
 
-            return resultTask;
+            CDPResponse? response = JsonHelper.Deserialize(resultTask, JsonContext.Default.CDPResponse);
+            return response;
         }
 
         public async Task<bool> WaitMethodAsync(string method, int? timeout)

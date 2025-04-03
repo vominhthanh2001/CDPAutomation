@@ -38,6 +38,8 @@ namespace CDPAutomation.Models.Browser
             }
         }
 
+        public bool InjectMouseInBrowser { get; set; }
+
         public void AddArguments(List<string> arguments)
         {
             if (Arguments is null) Arguments = new List<string>();

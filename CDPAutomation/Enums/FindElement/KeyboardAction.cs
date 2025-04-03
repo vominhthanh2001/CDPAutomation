@@ -4,9 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CDPAutomation.Models.Navigate
+namespace CDPAutomation.Enums.FindElement
 {
-    public class  NavigateGoToBack
+    public enum KeyboardAction
     {
+        Fast,
+        Slow,
+        RandomDelay
     }
 }

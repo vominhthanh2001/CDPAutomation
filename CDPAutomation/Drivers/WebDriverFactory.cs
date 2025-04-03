@@ -1,5 +1,4 @@
-﻿using CDPAutomation.Drivers;
-using CDPAutomation.Enums.WebDriver;
+﻿using CDPAutomation.Enums.WebDriver;
 using CDPAutomation.Exceptions;
 using CDPAutomation.Interfaces.Browser;
 using System;
@@ -8,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CDPAutomation.Factorys
+namespace CDPAutomation.Drivers
 {
     public class WebDriverFactory
     {

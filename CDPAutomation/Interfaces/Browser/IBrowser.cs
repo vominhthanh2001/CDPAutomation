@@ -15,7 +15,6 @@ namespace CDPAutomation.Interfaces.Browser
     public interface IBrowser
     {
         ICDP CDP { get; }
-        IFingerprint Fingerprint { get; }
         IPage? PageTarget { get; }
 
         Task StartAsync(StartOption? option = null);
