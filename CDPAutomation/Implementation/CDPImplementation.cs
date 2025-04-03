@@ -1,6 +1,7 @@
 ﻿using CDPAutomation.Helpers;
 using CDPAutomation.Implementation.Events;
 using CDPAutomation.Interfaces.CDP;
+using CDPAutomation.Models.Browser;
 using CDPAutomation.Models.CDP;
 using System;
 using System.Collections.Concurrent;
@@ -14,7 +15,7 @@ using Websocket.Client;
 
 namespace CDPAutomation.Implementation
 {
-    public class CDPImplementation : CDPEventImplementation, ICDP
+    internal class CDPImplementation : CDPEventImplementation, ICDP
     {
         public ConcurrentDictionary<int, TaskCompletionSource<string>> ResponseTasks
         {
@@ -23,6 +24,13 @@ namespace CDPAutomation.Implementation
         }
 
         private WebsocketClient? _websocketClient;
+
+        public Task<bool> IsConnect()
+        {
+            if (_websocketClient is null) return Task.FromResult(false);
+            if (_websocketClient.IsRunning) return Task.FromResult(true);
+            return Task.FromResult(false);
+        }
 
         public async Task ConnectAsync(string? webSocket)
         {
@@ -41,64 +49,46 @@ namespace CDPAutomation.Implementation
             await _websocketClient.Stop(WebSocketCloseStatus.NormalClosure, "Disconnect");
         }
 
-        public Task SendAsync(string method, object? parameters = null)
+        public async Task SendAsync(CDPRequest? data)
         {
-            if (_websocketClient is null) throw new Exception("WebSocketClient is null");
+            ArgumentNullException.ThrowIfNull(data);
 
-            var message = new CDPRequest
-            {
-                Id = CDPHelper.GetMessageId(),
-                Method = method,
-                Params = parameters
-            };
+            if (!await IsConnect())
+                throw new Exception("Not connected to the browser");
 
-            string? json = JsonHelper.Serialize(message);
-            if (json is null) return Task.CompletedTask;
+            string? json = JsonHelper.Serialize(data);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(json);
 
-            _websocketClient.Send(json);
-            return Task.CompletedTask;
+            _websocketClient?.Send(json);
         }
 
-        public async Task<CDPResponse?> SendInstantAsync(string method, object? parameters = null)
+        public async Task<CDPResponse?> SendInstantAsync(CDPRequest? data)
         {
-            if (_websocketClient is null) throw new Exception("WebSocketClient is null");
+            ArgumentNullException.ThrowIfNull(data);
 
-            var message = new CDPRequest
-            {
-                Id = CDPHelper.GetMessageId(),
-                Method = method,
-                Params = parameters
-            };
+            if (!await IsConnect())
+                throw new Exception("Not connected to the browser");
 
-            var taskCompletionSource = new TaskCompletionSource<string>();
-            _responseTasks[message.Id] = taskCompletionSource;
+            string? json = JsonHelper.Serialize(data);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(json);
 
-            string? json = JsonHelper.Serialize(message);
-            if (json is null) return default;
+            TaskCompletionSource<string> taskCompletionSource = new();
+            ResponseTasks[data.Id] = taskCompletionSource;
 
-            await _websocketClient.SendInstant(json);
+            Task? taskSendInstant = _websocketClient?.SendInstant(json);
+            ArgumentNullException.ThrowIfNull(taskSendInstant);
+            await taskSendInstant;
+
             string resultTask = await taskCompletionSource.Task;
+            CDPResponse? cdpResponse = JsonHelper.Deserialize(resultTask, JsonContext.Default.CDPResponse);
+            ArgumentNullException.ThrowIfNull(cdpResponse);
 
-            CDPResponse? response = JsonHelper.Deserialize(resultTask, JsonContext.Default.CDPResponse);
-            return response;
+            return cdpResponse;
         }
 
-        public async Task<bool> WaitMethodAsync(string method, int? timeout)
+        public Task<bool> WaitMethodAsync(object? data)
         {
-            if (method == null) throw new ArgumentNullException(nameof(method));
-            if (timeout is null) timeout = 60;
-
-            var tcs = new TaskCompletionSource<bool>();
-            _waitingEvents[method] = tcs;
-
-            // Timeout nếu sự kiện không xảy ra trong khoảng thời gian giới hạn
-            var timeoutTask = Task.Delay(timeout.Value * 1000);
-            var completedTask = await Task.WhenAny(tcs.Task, timeoutTask);
-
-            _waitingEvents.TryRemove(method, out _);
-
-            return completedTask == tcs.Task;
-
+            throw new NotImplementedException();
         }
 
         public Task<TaskCompletionSource<string>> GetTaskCompletionSourceAsync(int id)

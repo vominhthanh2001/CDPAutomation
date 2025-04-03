@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CDPAutomation.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,7 @@ namespace CDPAutomation.Models.CDP
     public class CDPRequest
     {
         [JsonPropertyName("id")]
-        public int Id { get; set; }
+        public int Id { get; set; } = CDPHelper.GetMessageId();
 
         [JsonPropertyName("method")]
         public string? Method { get; set; }

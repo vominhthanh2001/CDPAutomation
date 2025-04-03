@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
@@ -13,7 +14,7 @@ namespace CDPAutomation.Models.CDP
         public int Id { get; set; }
 
         [JsonPropertyName("result")]
-        public object? Result { get; set; }
+        public JsonElement? Result { get; set; }
 
         [JsonPropertyName("error")]
         public CDPError? Error { get; set; }

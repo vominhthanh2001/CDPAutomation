@@ -1,5 +1,7 @@
-﻿using CDPAutomation.Helpers;
+﻿using CDPAutomation.Abstracts;
+using CDPAutomation.Helpers;
 using CDPAutomation.Interfaces.Events;
+using CDPAutomation.Models.Browser;
 using System.Collections.Concurrent;
 using System.Text.Json;
 

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CDPAutomation.Models.Browser
 {
-    public class StartOption
+    public class StartOptionModel
     {
         public string? ExecutablePath { get; set; } = BrowserHelper.GetBrowserPath();
         public string? UserDataDir { get; set; } = BrowserHelper.GetUserDataDir();
@@ -21,7 +21,7 @@ namespace CDPAutomation.Models.Browser
             }
         }
 
-        public WindowInfomation? Window { get; set; }
+        public WindowInfomationModel? Window { get; set; }
         public List<string>? Arguments { get; set; }
         public List<string>? Headers { get; set; }
 
@@ -42,7 +42,7 @@ namespace CDPAutomation.Models.Browser
 
         public void AddArguments(List<string> arguments)
         {
-            if (Arguments is null) Arguments = new List<string>();
+            Arguments ??= [];
 
             foreach (var argument in arguments)
                 AddArgument(argument);
@@ -50,7 +50,7 @@ namespace CDPAutomation.Models.Browser
 
         public void AddArgument(string argument)
         {
-            if (Arguments is null) Arguments = new List<string>();
+            Arguments ??= [];
 
             //check if argument already exists
             if (Arguments.Contains(argument)) return;
@@ -58,9 +58,9 @@ namespace CDPAutomation.Models.Browser
             Arguments.Add(argument);
         }
 
-        internal static StartOption StartOptionInstance()
+        internal static StartOptionModel StartOptionInstance()
         {
-            return new StartOption
+            return new StartOptionModel
             {
                 ExecutablePath = BrowserHelper.GetBrowserPath(),
                 UserDataDir = BrowserHelper.GetUserDataDir()

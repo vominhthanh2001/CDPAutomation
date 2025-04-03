@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CDPAutomation.Models.Browser
 {
-    public class WindowInfomation
+    public class WindowInfomationModel
     {
         public Size Size { get; set; }
         public Point Position { get; set; }

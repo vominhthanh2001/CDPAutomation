@@ -1,5 +1,8 @@
 ﻿using CDPAutomation.Models.Browser;
 using CDPAutomation.Models.CDP;
+using CDPAutomation.Models.JavaScript;
+using CDPAutomation.Models.Page;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
@@ -15,10 +18,26 @@ namespace CDPAutomation.Helpers
     [JsonSerializable(typeof(JsonElement))]
     [JsonSerializable(typeof(JsonDocument))]
 
-
     #region Browser
     [JsonSerializable(typeof(DebuggerBrowserResponse))]
     [JsonSerializable(typeof(DebuggerPageResponse))]
+    [JsonSerializable(typeof(List<DebuggerPageResponse>))]
+    #endregion
+
+    #region Page
+    [JsonSerializable(typeof(NewPageParams))]
+    [JsonSerializable(typeof(NewPageResult))]
+    [JsonSerializable(typeof(PageActivateParams))]
+    [JsonSerializable(typeof(PageCloseParams))]
+    [JsonSerializable(typeof(PageCloseResult))]
+    [JsonSerializable(typeof(PageTargetIdInfoParams))]
+    [JsonSerializable(typeof(TargetInfoObjectResult))]
+    [JsonSerializable(typeof(TargetInfoValueResult))]
+    #endregion
+
+    #region JavaScript
+    [JsonSerializable(typeof(ExecuteJavaScriptParams))]
+    [JsonSerializable(typeof(ExecuteJavaScriptResult))]
     #endregion
 
     #region CDP
@@ -26,7 +45,7 @@ namespace CDPAutomation.Helpers
     [JsonSerializable(typeof(CDPResponse))]
     [JsonSerializable(typeof(CDPError))]
     #endregion
-    public partial class JsonContext : JsonSerializerContext { }
+    internal partial class JsonContext : JsonSerializerContext { }
 
     internal static class JsonHelper
     {
@@ -36,13 +55,16 @@ namespace CDPAutomation.Helpers
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         };
 
-        private static readonly JsonContext _context = new JsonContext(_options);
+        private static readonly JsonContext _context = new(_options);
 
-        public static string? GetProperty(string json, string property)
+        internal static string? GetProperty(string json, string property, bool isThrowIfNull = false)
         {
             try
             {
-                using (JsonDocument doc = JsonDocument.Parse(json))
+                ArgumentNullException.ThrowIfNullOrWhiteSpace(json);
+                ArgumentNullException.ThrowIfNullOrWhiteSpace(property);
+
+                using JsonDocument doc = JsonDocument.Parse(json);
                 {
                     if (doc.RootElement.TryGetProperty(property, out JsonElement element))
                     {
@@ -50,51 +72,79 @@ namespace CDPAutomation.Helpers
                     }
                 }
             }
-            catch (JsonException) { }
+            catch (JsonException)
+            {
+                if (isThrowIfNull)
+                    throw;
+            }
 
             return default;
         }
 
-        public static object? Deserialize(string json)
+        internal static TModel? Deserialize<TModel>(this CDPResponse? jsonElement, JsonTypeInfo<TModel> jsonTypeInfo, bool isThrowIfNull = false)
         {
             try
             {
-                return JsonSerializer.Deserialize(json, _context.Object);
+                ArgumentNullException.ThrowIfNull(jsonElement);
+                ArgumentNullException.ThrowIfNull(jsonElement?.Result);
+
+                string? raw = jsonElement?.Result?.GetRawText();
+                ArgumentNullException.ThrowIfNullOrWhiteSpace(raw);
+
+                TModel? value = JsonSerializer.Deserialize<TModel>(raw, jsonTypeInfo);
+                return value;
             }
-            catch (JsonException) { }
+            catch (Exception)
+            {
+                if (isThrowIfNull)
+                    throw;
+            }
 
             return default;
         }
 
-        public static TModel? Deserialize<TModel>(string json, JsonTypeInfo<TModel> jsonTypeInfo)
+        internal static TModel? Deserialize<TModel>(string json, JsonTypeInfo<TModel> jsonTypeInfo, bool isThrowIfNull = false)
         {
             try
             {
-                return JsonSerializer.Deserialize(json, jsonTypeInfo);
+                return JsonSerializer.Deserialize<TModel>(json, jsonTypeInfo);
             }
-            catch (JsonException) { }
+            catch (JsonException)
+            {
+                if (isThrowIfNull)
+                    throw;
+            }
 
             return default;
         }
 
-        public static string? Serialize(object obj)
+        internal static string? Serialize(object obj, bool isThrowIfNull = false)
         {
             try
             {
                 return JsonSerializer.Serialize(obj, _context.Object);
             }
-            catch (JsonException) { }
+            catch (JsonException)
+            {
+                if (isThrowIfNull)
+                    throw;
+            }
 
             return default;
         }
 
-        public static string? Serialize<TModel>(TModel obj, JsonTypeInfo<TModel> jsonTypeInfo)
+        internal static string? Serialize<TModel>(TModel obj, JsonTypeInfo<TModel> jsonTypeInfo, bool isThrowIfNull = false)
         {
             try
             {
                 return JsonSerializer.Serialize(obj, jsonTypeInfo);
             }
-            catch (JsonException) { }
+            catch (JsonException)
+            {
+                if (isThrowIfNull)
+                    throw;
+            }
+
             return default;
         }
     }

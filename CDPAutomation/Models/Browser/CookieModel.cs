@@ -9,14 +9,14 @@ namespace CDPAutomation.Models.Browser
     public class CookieModel
     {
         // Fields
-        private string _name;
+        private string? _name;
         private DateTime? _expiryDate;
-        private object _value;
+        private object? _value;
         private bool _isSecure;
         private bool _isHttpOnly;
 
         // Properties
-        public string Name
+        public string? Name
         {
             get => _name;
             set => _name = value ?? string.Empty; // Ensure name is not null
@@ -28,7 +28,7 @@ namespace CDPAutomation.Models.Browser
             set => _expiryDate = value;
         }
 
-        public object Value
+        public object? Value
         {
             get => _value;
             set => _value = value;

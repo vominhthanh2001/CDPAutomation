@@ -11,13 +11,14 @@ namespace CDPAutomation.Interfaces.CDP
     public interface ICDP
     {
         ConcurrentDictionary<int, TaskCompletionSource<string>> ResponseTasks { get; set; }
-
+        
+        Task<bool> IsConnect();
         Task ConnectAsync(string? webSocket);
         Task DisconnectAsync();
 
-        Task SendAsync(string method, object? parameters = null);
-        Task<CDPResponse?> SendInstantAsync(string method, object? parameters = null);
-        Task<bool> WaitMethodAsync(string method, int? timeout);
+        Task SendAsync(CDPRequest? data);
+        Task<CDPResponse?> SendInstantAsync(CDPRequest? data);
+        Task<bool> WaitMethodAsync(object? data);
 
         Task<TaskCompletionSource<string>> GetTaskCompletionSourceAsync(int id);
     }

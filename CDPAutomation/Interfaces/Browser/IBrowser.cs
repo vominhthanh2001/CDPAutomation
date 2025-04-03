@@ -4,6 +4,7 @@ using CDPAutomation.Interfaces.JavaScript;
 using CDPAutomation.Interfaces.Pages;
 using CDPAutomation.Interfaces.Request;
 using CDPAutomation.Models.Browser;
+using CDPAutomation.Models.Page;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,9 +16,9 @@ namespace CDPAutomation.Interfaces.Browser
     public interface IBrowser
     {
         ICDP CDP { get; }
-        IPage? PageTarget { get; }
+        IPage PageTarget { get; set; }
 
-        Task StartAsync(StartOption? option = null);
+        Task StartAsync(StartOptionModel? option = null);
         Task CloseAsync();
 
         Task<List<IPage>> Pages();

@@ -9,9 +9,9 @@ namespace CDPAutomation.Interfaces.Browser
 {
     public interface INavigate
     {
-        Task GoToUrlAsync(string url, OptionNavigate? option = null);
-        Task GoToBackAsync(OptionNavigate? option = null);
-        Task GoToForwardAsync(OptionNavigate? option = null);
-        Task RefreshAsync(OptionNavigate? option = null);
+        Task GoToUrlAsync(string url, OptionNavigateModel? option = null);
+        Task GoToBackAsync(OptionNavigateModel? option = null);
+        Task GoToForwardAsync(OptionNavigateModel? option = null);
+        Task RefreshAsync(OptionNavigateModel? option = null);
     }
 }

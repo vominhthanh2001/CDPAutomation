@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CDPAutomation.Models.Browser
 {
-    public class OptionNavigate
+    public class OptionNavigateModel
     {
         public int Timeout { get; set; } = 60;
         public bool WaitUntilPageLoad { get; set; } = true;
