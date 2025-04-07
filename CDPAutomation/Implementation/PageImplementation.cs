@@ -42,7 +42,7 @@ namespace CDPAutomation.Implementation
 
         public DebuggerPageResult DebuggerPage { get; private set; }
 
-        public Task ActivateAsync()
+        public async Task ActivateAsync()
         {
             CDPRequest @params = new()
             {
@@ -53,12 +53,10 @@ namespace CDPAutomation.Implementation
                 }
             };
 
-            _cdp?.SendAsync(@params);
-
-            return Task.CompletedTask;
+            await _cdp.SendAsync(@params);
         }
 
-        public Task CloseAsync()
+        public async Task CloseAsync()
         {
             CDPRequest @params = new()
             {
@@ -69,14 +67,11 @@ namespace CDPAutomation.Implementation
                 }
             };
 
-            Task taskClose = _cdp.SendAsync(@params);
-            ArgumentNullException.ThrowIfNull(taskClose);
+            await _cdp.SendAsync(@params);
 
-            _cdp.DisconnectAsync().Wait();
+            await _cdp.DisconnectAsync();
 
             PageObjectManager.RemovePage(this);
-
-            return Task.CompletedTask;
         }
 
         public ICookie Cookies() => _cookie;

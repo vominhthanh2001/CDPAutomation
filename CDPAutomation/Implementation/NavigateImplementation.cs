@@ -20,7 +20,7 @@ namespace CDPAutomation.Implementation
         private readonly ICDP _cdp = cdp;
         private readonly DebuggerPageResult _debuggerPageResponse = debuggerPageResponse;
 
-        public Task GoToBackAsync(OptionNavigateModel? option = null)
+        public async Task GoToBackAsync(OptionNavigateModel? option = null)
         {
             option ??= new OptionNavigateModel();
 
@@ -33,10 +33,7 @@ namespace CDPAutomation.Implementation
                 }
             };
 
-            Task<CDPResult?>? taskGetNavigationHistory = _cdp.SendInstantAsync(@params);
-            ArgumentNullException.ThrowIfNull(taskGetNavigationHistory);
-
-            CDPResult? response = taskGetNavigationHistory.Result;
+            CDPResult? response = await _cdp.SendInstantAsync(@params);
             ArgumentNullException.ThrowIfNull(response);
 
             NavigationHistoryResult? navigationHistoryResult = response.Deserialize(JsonContext.Default.NavigationHistoryResult, true);
@@ -48,18 +45,15 @@ namespace CDPAutomation.Implementation
             List<NavigationHistoryEntriesResult>? entries = navigationHistoryResult.entries;
             ArgumentNullException.ThrowIfNull(entries);
 
-            if (currentIndex <= 0 || currentIndex - 1 <= 0) return Task.CompletedTask;
+            if (currentIndex <= 0 || currentIndex - 1 <= 0) return;
 
             NavigationHistoryEntriesResult entry = entries[currentIndex.Value - 1];
             ArgumentNullException.ThrowIfNull(entry);
 
-            Task taskGoToUrl = GoToUrlAsync(entry.Url!, option);
-            ArgumentNullException.ThrowIfNull(taskGoToUrl);
-
-            return Task.CompletedTask;
+            await GoToUrlAsync(entry.Url!, option);
         }
 
-        public Task GoToForwardAsync(OptionNavigateModel? option = null)
+        public async Task GoToForwardAsync(OptionNavigateModel? option = null)
         {
             option ??= new OptionNavigateModel();
 
@@ -72,10 +66,7 @@ namespace CDPAutomation.Implementation
                 }
             };
 
-            Task<CDPResult?>? taskGetNavigationHistory = _cdp.SendInstantAsync(@params);
-            ArgumentNullException.ThrowIfNull(taskGetNavigationHistory);
-
-            CDPResult? response = taskGetNavigationHistory.Result;
+            CDPResult? response = await _cdp.SendInstantAsync(@params);
             ArgumentNullException.ThrowIfNull(response);
 
             NavigationHistoryResult? navigationHistoryResult = response.Deserialize(JsonContext.Default.NavigationHistoryResult, true);
@@ -87,18 +78,15 @@ namespace CDPAutomation.Implementation
             List<NavigationHistoryEntriesResult>? entries = navigationHistoryResult.entries;
             ArgumentNullException.ThrowIfNull(entries);
 
-            if (currentIndex <= 0 || currentIndex + 1 > entries.Count) return Task.CompletedTask;
+            if (currentIndex <= 0 || currentIndex + 1 > entries.Count) return;
 
             NavigationHistoryEntriesResult entry = entries[currentIndex.Value + 1];
             ArgumentNullException.ThrowIfNull(entry);
 
-            Task taskGoToUrl = GoToUrlAsync(entry.Url!, option);
-            ArgumentNullException.ThrowIfNull(taskGoToUrl);
-
-            return Task.CompletedTask;
+            await GoToUrlAsync(entry.Url!, option);
         }
 
-        public Task GoToUrlAsync(string url, OptionNavigateModel? option = null)
+        public async Task GoToUrlAsync(string url, OptionNavigateModel? option = null)
         {
             option ??= new OptionNavigateModel();
 
@@ -112,10 +100,7 @@ namespace CDPAutomation.Implementation
                 }
             };
 
-            Task<CDPResult?>? taskGoToUrl = _cdp.SendInstantAsync(@params);
-            ArgumentNullException.ThrowIfNull(taskGoToUrl);
-
-            CDPResult? response = taskGoToUrl.Result;
+            CDPResult? response = await _cdp.SendInstantAsync(@params);
             ArgumentNullException.ThrowIfNull(response);
 
             NavigateGoToUrlFrameResult? navigateGoToUrlFrameResult = response.Deserialize(JsonContext.Default.NavigateGoToUrlFrameResult, true);
@@ -128,11 +113,9 @@ namespace CDPAutomation.Implementation
 
                 isWait.Wait(new TimeSpan(0, 0, option.Timeout));
             }
-
-            return Task.CompletedTask;
         }
 
-        public Task RefreshAsync(OptionNavigateModel? option = null)
+        public async Task RefreshAsync(OptionNavigateModel? option = null)
         {
             option ??= new OptionNavigateModel();
 
@@ -146,8 +129,7 @@ namespace CDPAutomation.Implementation
                 }
             };
 
-            Task taskRefresh = _cdp.SendAsync(@params);
-            ArgumentNullException.ThrowIfNull(taskRefresh);
+            await _cdp.SendAsync(@params);
 
             if (option.WaitUntilPageLoad && !option.IgnoreCache)
             {
@@ -156,8 +138,6 @@ namespace CDPAutomation.Implementation
 
                 isWait.Wait(new TimeSpan(0, 0, option.Timeout));
             }
-
-            return Task.CompletedTask;
         }
     }
 }

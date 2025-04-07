@@ -230,10 +230,6 @@ namespace CDPAutomation.Implementation
             return imageBytes;
         }
 
-        /// <summary> 
-        /// Lấy tọa độ của phần tử
-        /// </summary>
-        /// <returns>Danh sách các hình chữ nhật đại diện cho các phần tử</returns>
         public async Task<GetBoxModelResult?> GetBoundingBoxAsync()
         {
             ArgumentNullException.ThrowIfNull(_nodeProperty);

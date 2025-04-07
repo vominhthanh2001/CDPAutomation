@@ -205,11 +205,6 @@ namespace CDPAutomation.Implementation
             return elements;
         }
 
-        /// <summary>
-        /// Get properties from the node list
-        /// </summary>
-        /// <param name="nodeList">Node list</param>
-        /// <returns></returns>
         private async Task<Dictionary<NodeProperty, RequestNodeResult?>> GetPropertiesNodeList(NodeListResult? nodeList)
         {
             ArgumentNullException.ThrowIfNull(nodeList);
@@ -245,11 +240,6 @@ namespace CDPAutomation.Implementation
             return propertiesNodeList;
         }
 
-        /// <summary>
-        /// Request node from the DOM
-        /// </summary>
-        /// <param name="nodeProperty">Node property</param>
-        /// <returns></returns>
         private async Task<RequestNodeResult?> RequestNode(NodeProperty nodeProperty)
         {
             ArgumentNullException.ThrowIfNull(nodeProperty);

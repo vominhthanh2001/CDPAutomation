@@ -7,10 +7,11 @@ using CDPAutomation.Models.Browser;
 using System.Security.Cryptography;
 
 IBrowser browser = WebDriverFactory.CreateWebDriver(WebDriverMode.Chrome);
-await browser.StartAsync();
-IPage page = browser.PageTarget;
+await browser.StartAsync(); // khởi tạo trình duyệt
 
-await page.Navigate().GoToUrlAsync("https://www.facebook.com/");
+IPage page = browser.PageTarget; // trang hiện tại
+
+await page.Navigate().GoToUrlAsync("https://www.facebook.com/"); // truy cập vào trang
 
 IElement? element = await page.FindElement().FindById("email") ?? throw new Exception("Element not found");
 await element.SendKeysAsync("thành đẹp trai");
