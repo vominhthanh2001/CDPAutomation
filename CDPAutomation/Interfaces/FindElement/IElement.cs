@@ -1,4 +1,5 @@
 ﻿using CDPAutomation.Interfaces.FindElement.Options;
+using CDPAutomation.Models.FindElement.Element;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -22,17 +23,7 @@ namespace CDPAutomation.Interfaces.FindElement
         Task<string?> GetAttributeAsync(string attributeName);
         Task<string?> GetCssValueAsync(string cssProperty);
 
-        Task HoverAsync();
-        Task DragAndDropAsync(IElement targetElement);
-        Task ScrollIntoViewAsync();
-        Task RightClickAsync();
-        Task DoubleClickAsync();
-
-        Task SelectByTextAsync(string text);
-        Task SelectByValueAsync(string value);
-        Task SelectByIndexAsync(int index);
-
         Task<byte[]> CaptureScreenshotAsync();
-        Task<Rectangle> GetBoundingBoxAsync();
+        Task<GetBoxModelResult?> GetBoundingBoxAsync();
     }
 }

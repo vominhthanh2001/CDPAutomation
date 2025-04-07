@@ -8,7 +8,7 @@ namespace CDPAutomation.Interfaces.Pages
 {
     public interface IPage
     {
-        DebuggerPageResponse DebuggerPage { get; }
+        DebuggerPageResult DebuggerPage { get; }
 
         INavigate Navigate();
         IWindow Window();

@@ -15,10 +15,10 @@ using System.Threading.Tasks;
 
 namespace CDPAutomation.Implementation
 {
-    internal class NavigateImplementation(ICDP cdp, DebuggerPageResponse debuggerPageResponse) : AbstractInitializeImplementation(cdp, debuggerPageResponse), INavigate
+    internal class NavigateImplementation(ICDP cdp, DebuggerPageResult debuggerPageResponse) : AbstractInitializeImplementation(cdp, debuggerPageResponse), INavigate
     {
         private readonly ICDP _cdp = cdp;
-        private readonly DebuggerPageResponse _debuggerPageResponse = debuggerPageResponse;
+        private readonly DebuggerPageResult _debuggerPageResponse = debuggerPageResponse;
 
         public Task GoToBackAsync(OptionNavigateModel? option = null)
         {
@@ -33,10 +33,10 @@ namespace CDPAutomation.Implementation
                 }
             };
 
-            Task<CDPResponse?>? taskGetNavigationHistory = _cdp.SendInstantAsync(@params);
+            Task<CDPResult?>? taskGetNavigationHistory = _cdp.SendInstantAsync(@params);
             ArgumentNullException.ThrowIfNull(taskGetNavigationHistory);
 
-            CDPResponse? response = taskGetNavigationHistory.Result;
+            CDPResult? response = taskGetNavigationHistory.Result;
             ArgumentNullException.ThrowIfNull(response);
 
             NavigationHistoryResult? navigationHistoryResult = response.Deserialize(JsonContext.Default.NavigationHistoryResult, true);
@@ -72,10 +72,10 @@ namespace CDPAutomation.Implementation
                 }
             };
 
-            Task<CDPResponse?>? taskGetNavigationHistory = _cdp.SendInstantAsync(@params);
+            Task<CDPResult?>? taskGetNavigationHistory = _cdp.SendInstantAsync(@params);
             ArgumentNullException.ThrowIfNull(taskGetNavigationHistory);
 
-            CDPResponse? response = taskGetNavigationHistory.Result;
+            CDPResult? response = taskGetNavigationHistory.Result;
             ArgumentNullException.ThrowIfNull(response);
 
             NavigationHistoryResult? navigationHistoryResult = response.Deserialize(JsonContext.Default.NavigationHistoryResult, true);
@@ -112,10 +112,10 @@ namespace CDPAutomation.Implementation
                 }
             };
 
-            Task<CDPResponse?>? taskGoToUrl = _cdp.SendInstantAsync(@params);
+            Task<CDPResult?>? taskGoToUrl = _cdp.SendInstantAsync(@params);
             ArgumentNullException.ThrowIfNull(taskGoToUrl);
 
-            CDPResponse? response = taskGoToUrl.Result;
+            CDPResult? response = taskGoToUrl.Result;
             ArgumentNullException.ThrowIfNull(response);
 
             NavigateGoToUrlFrameResult? navigateGoToUrlFrameResult = response.Deserialize(JsonContext.Default.NavigateGoToUrlFrameResult, true);

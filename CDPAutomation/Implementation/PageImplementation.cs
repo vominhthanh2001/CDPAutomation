@@ -26,20 +26,21 @@ namespace CDPAutomation.Implementation
         private readonly IJavaScriptExecutor _javascript = default!;
         private readonly IFindElement _findElement = default!;
 
-        public PageImplementation(ICDP cdp, DebuggerPageResponse page)
+        public PageImplementation(ICDP cdp, DebuggerPageResult page)
         {
             _cdp = cdp ?? throw new ArgumentNullException(nameof(cdp));
             _cdp.SendAsync(new CDPRequest { Method = "Page.enable" });
-            //_cdp.SendAsync(new CDPRequest { Method = "Network.enable" });
-            //_cdp.SendAsync(new CDPRequest { Method = "DOM.enable" });
-            //_cdp.SendAsync(new CDPRequest { Method = "Runtime.enable" });
+            _cdp.SendAsync(new CDPRequest { Method = "Network.enable" });
+            _cdp.SendAsync(new CDPRequest { Method = "DOM.enable" });
+            _cdp.SendAsync(new CDPRequest { Method = "Runtime.enable" });
 
             _navigate = new NavigateImplementation(cdp, page);
             _javascript = new JavaScriptImplementation(cdp, page);
+            _findElement = new FindElementImplementation(cdp, _javascript, page);
             DebuggerPage = page ?? throw new ArgumentNullException(nameof(page));
         }
 
-        public DebuggerPageResponse DebuggerPage { get; private set; }
+        public DebuggerPageResult DebuggerPage { get; private set; }
 
         public Task ActivateAsync()
         {

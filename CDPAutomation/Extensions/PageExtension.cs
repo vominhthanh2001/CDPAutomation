@@ -8,7 +8,7 @@ namespace CDPAutomation.Extensions
 {
     internal static class PageExtension
     {
-        internal static Task<DebuggerPageResponse?> GetTargetInfo(this ICDP cdp, string? targetId)
+        internal static Task<DebuggerPageResult?> GetTargetInfo(this ICDP cdp, string? targetId)
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(targetId);
 
@@ -21,17 +21,17 @@ namespace CDPAutomation.Extensions
                 }
             };
 
-            Task<CDPResponse?>? taskGetTargetInfo = cdp.SendInstantAsync(@params);
+            Task<CDPResult?>? taskGetTargetInfo = cdp.SendInstantAsync(@params);
             ArgumentNullException.ThrowIfNull(taskGetTargetInfo);
 
-            CDPResponse? response = taskGetTargetInfo.Result;
+            CDPResult? response = taskGetTargetInfo.Result;
             ArgumentNullException.ThrowIfNull(response);
 
             TargetInfoObjectResult? resultTargetInfoObjectResult = response.Deserialize(JsonContext.Default.TargetInfoObjectResult);
             ArgumentNullException.ThrowIfNull(resultTargetInfoObjectResult);
             ArgumentNullException.ThrowIfNull(resultTargetInfoObjectResult.TarGetInfo);
 
-            DebuggerPageResponse debuggerPageResponse = new()
+            DebuggerPageResult debuggerPageResponse = new()
             {
                 Id = resultTargetInfoObjectResult.TarGetInfo.TargetId,
                 Title = resultTargetInfoObjectResult.TarGetInfo.Title,
@@ -45,22 +45,22 @@ namespace CDPAutomation.Extensions
                 //CanAccessOpener = resultTargetInfoObjectResult.TarGetInfo.CanAccessOpener
             };
 
-            return Task.FromResult<DebuggerPageResponse?>(debuggerPageResponse);
+            return Task.FromResult<DebuggerPageResult?>(debuggerPageResponse);
         }
 
-        internal static Task<DebuggerPageResponse?> GetTargetInfo(this ICDP cdp, NewPageResult? pageResult)
+        internal static Task<DebuggerPageResult?> GetTargetInfo(this ICDP cdp, NewPageResult? pageResult)
         {
             ArgumentNullException.ThrowIfNull(pageResult);
 
             string? targetId = pageResult.TargetId;
 
-            Task<DebuggerPageResponse?> taskGetTargetInfo = cdp.GetTargetInfo(targetId);
+            Task<DebuggerPageResult?> taskGetTargetInfo = cdp.GetTargetInfo(targetId);
             ArgumentNullException.ThrowIfNull(taskGetTargetInfo);
 
-            DebuggerPageResponse? result = taskGetTargetInfo.Result;
+            DebuggerPageResult? result = taskGetTargetInfo.Result;
             ArgumentNullException.ThrowIfNull(result);
 
-            return Task.FromResult<DebuggerPageResponse?>(result);
+            return Task.FromResult<DebuggerPageResult?>(result);
         }
     }
 }

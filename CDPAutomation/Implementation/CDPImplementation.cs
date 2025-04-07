@@ -94,7 +94,7 @@ namespace CDPAutomation.Implementation
             await _clientWebSocket.SendAsync(sendBuffer, WebSocketMessageType.Text, true, CancellationToken.None);
         }
 
-        public async Task<CDPResponse?> SendInstantAsync(CDPRequest? data)
+        public async Task<CDPResult?> SendInstantAsync(CDPRequest? data)
         {
             ArgumentNullException.ThrowIfNull(data);
             ArgumentNullException.ThrowIfNull(_clientWebSocket);

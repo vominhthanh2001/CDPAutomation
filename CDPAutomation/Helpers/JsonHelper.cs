@@ -1,5 +1,7 @@
 ﻿using CDPAutomation.Models.Browser;
 using CDPAutomation.Models.CDP;
+using CDPAutomation.Models.FindElement;
+using CDPAutomation.Models.FindElement.Element;
 using CDPAutomation.Models.JavaScript;
 using CDPAutomation.Models.Navigate;
 using CDPAutomation.Models.Page;
@@ -7,6 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
+using static CDPAutomation.Models.FindElement.Element.CaptureScreenshotParams;
 
 namespace CDPAutomation.Helpers
 {
@@ -20,9 +23,9 @@ namespace CDPAutomation.Helpers
     [JsonSerializable(typeof(JsonDocument))]
 
     #region Browser
-    [JsonSerializable(typeof(DebuggerBrowserResponse))]
-    [JsonSerializable(typeof(DebuggerPageResponse))]
-    [JsonSerializable(typeof(List<DebuggerPageResponse>))]
+    [JsonSerializable(typeof(DebuggerBrowserResult))]
+    [JsonSerializable(typeof(DebuggerPageResult))]
+    [JsonSerializable(typeof(List<DebuggerPageResult>))]
     #endregion
 
     #region Page
@@ -50,11 +53,30 @@ namespace CDPAutomation.Helpers
     [JsonSerializable(typeof(NavigateRefreshParams))]
     #endregion
 
+    #region FindElement
+    [JsonSerializable(typeof(EvaluateParams))]
+    [JsonSerializable(typeof(EvaluateResult))]
+    #endregion
+
+    #region Element
+    [JsonSerializable(typeof(NodeListResult))]
+    [JsonSerializable(typeof(NodeResult))]
+    [JsonSerializable(typeof(GetPropertiesParams))]
+    [JsonSerializable(typeof(NodeProperties))]
+    [JsonSerializable(typeof(NodeProperty))]
+    [JsonSerializable(typeof(RequestNodeParams))]
+    [JsonSerializable(typeof(RequestNodeResult))]
+    [JsonSerializable(typeof(GetBoxModelParams))]
+    [JsonSerializable(typeof(GetBoxModelResult))]
+    [JsonSerializable(typeof(DispatchMouseEventParams))]
+    [JsonSerializable(typeof(DispatchKeyEventParams))]
+    [JsonSerializable(typeof(CaptureScreenshotParams))]
+    [JsonSerializable(typeof(ClipRequestModel))]
+    #endregion
+
     #region CDP
     [JsonSerializable(typeof(CDPRequest))]
-    [JsonSerializable(typeof(CDPResponse))]
-    [JsonSerializable(typeof(CDPFinishedResponse))]
-    [JsonSerializable(typeof(CDPFinishedResponseResult))]
+    [JsonSerializable(typeof(CDPResult))]
     [JsonSerializable(typeof(CDPError))]
     #endregion
     internal partial class JsonContext : JsonSerializerContext { }
@@ -69,7 +91,7 @@ namespace CDPAutomation.Helpers
 
         private static readonly JsonContext _context = new(_options);
 
-        internal static string? GetProperty(string json, string property, bool isThrowIfNull = false)
+        internal static string? GetProperty(string? json, string? property, bool isThrowIfNull = false)
         {
             try
             {
@@ -93,7 +115,7 @@ namespace CDPAutomation.Helpers
             return default;
         }
 
-        internal static TModel? Deserialize<TModel>(this CDPResponse? jsonElement, JsonTypeInfo<TModel> jsonTypeInfo, bool isThrowIfNull = false)
+        internal static TModel? Deserialize<TModel>(this CDPResult? jsonElement, JsonTypeInfo<TModel> jsonTypeInfo, bool isThrowIfNull = false)
         {
             try
             {

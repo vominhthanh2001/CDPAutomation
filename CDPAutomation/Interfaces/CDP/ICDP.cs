@@ -18,7 +18,7 @@ namespace CDPAutomation.Interfaces.CDP
         Task DisconnectAsync();
 
         Task SendAsync(CDPRequest? data);
-        Task<CDPResponse?> SendInstantAsync(CDPRequest? data);
+        Task<CDPResult?> SendInstantAsync(CDPRequest? data);
         Task<bool> WaitMethodAsync(string? method);
 
         Task<TaskCompletionSource<string>> GetTaskCompletionSourceAsync(int id);

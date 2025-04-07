@@ -21,9 +21,9 @@ namespace CDPAutomation.Drivers
         private ProcessResult? _processDebuggerBrowser;
         private StartOptionModel? _option;
 
-        private List<DebuggerPageResponse> _debuggerPageResponse = [];
-        private DebuggerPageResponse? _debuggerPageMainResponse;
-        private DebuggerBrowserResponse? _debuggerBrowserMainResponse;
+        private List<DebuggerPageResult> _debuggerPageResponse = [];
+        private DebuggerPageResult? _debuggerPageMainResponse;
+        private DebuggerBrowserResult? _debuggerBrowserMainResponse;
         private int? _port;
 
         public ICDP CDP { get; }
@@ -80,7 +80,7 @@ namespace CDPAutomation.Drivers
             _processDebuggerBrowser = ProcessHelper.CurlExecute($"http://localhost:{port}/json/version", true) ?? throw new Exception("Can not get json version");
             if (_processDebuggerBrowser.Process is null) throw new Exception("Can not get json version");
             if (_processDebuggerBrowser.ProcessExitCode != 0) throw new Exception("Can not get json version");
-            _debuggerBrowserMainResponse = JsonHelper.Deserialize(_processDebuggerBrowser.Output ?? string.Empty, jsonTypeInfo: JsonContext.Default.DebuggerBrowserResponse) ?? throw new Exception("Can not deserialize json version");
+            _debuggerBrowserMainResponse = JsonHelper.Deserialize(_processDebuggerBrowser.Output ?? string.Empty, jsonTypeInfo: JsonContext.Default.DebuggerBrowserResult) ?? throw new Exception("Can not deserialize json version");
 
             await this.CDP.ConnectAsync(_debuggerBrowserMainResponse.WebSocketDebuggerUrl);
 
@@ -88,7 +88,7 @@ namespace CDPAutomation.Drivers
             if (_processDebuggerPage.Process is null) throw new Exception("Can not get json");
             if (_processDebuggerPage.ProcessExitCode != 0) throw new Exception("Can not get json");
 
-            _debuggerPageResponse = JsonHelper.Deserialize(_processDebuggerPage.Output ?? string.Empty, jsonTypeInfo: JsonContext.Default.ListDebuggerPageResponse) ?? throw new Exception("Can not deserialize json");
+            _debuggerPageResponse = JsonHelper.Deserialize(_processDebuggerPage.Output ?? string.Empty, jsonTypeInfo: JsonContext.Default.ListDebuggerPageResult) ?? throw new Exception("Can not deserialize json");
             _debuggerPageMainResponse = _debuggerPageResponse?.FirstOrDefault(x => x.Type == "page");
 
             //page đầu tiên khi được khởi tạo
@@ -181,10 +181,10 @@ namespace CDPAutomation.Drivers
                 }
             };
 
-            Task<CDPResponse?>? taskNewPage = this.CDP.SendInstantAsync(@params);
+            Task<CDPResult?>? taskNewPage = this.CDP.SendInstantAsync(@params);
             ArgumentNullException.ThrowIfNull(taskNewPage);
 
-            CDPResponse? response = taskNewPage.Result;
+            CDPResult? response = taskNewPage.Result;
             ArgumentNullException.ThrowIfNull(response);
 
             NewPageResult? result = response.Deserialize(JsonContext.Default.NewPageResult, true);
@@ -196,13 +196,13 @@ namespace CDPAutomation.Drivers
             //_socketPage = $"ws://localhost:{_port}/devtools/page/{result!.TargetId}";
             //CDP.ConnectAsync(_socketPage)!.Wait();
 
-            //Task<DebuggerPageResponse?> taskGetTargetInfo = this.CDP.GetTargetInfo(result);
+            //Task<DebuggerPageResult?> taskGetTargetInfo = this.CDP.GetTargetInfo(result);
             //ArgumentNullException.ThrowIfNull(taskGetTargetInfo);
 
-            //DebuggerPageResponse? debuggerPage = taskGetTargetInfo.Result;
+            //DebuggerPageResult? debuggerPage = taskGetTargetInfo.Result;
             //ArgumentNullException.ThrowIfNull(debuggerPage);
 
-            DebuggerPageResponse? debuggerPage = new()
+            DebuggerPageResult? debuggerPage = new()
             {
                 Id = result!.TargetId,
             };

@@ -1,5 +1,6 @@
 ﻿using CDPAutomation.Interfaces.CDP;
 using CDPAutomation.Models.Browser;
+using CDPAutomation.Models.FindElement.Element;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -11,20 +12,8 @@ namespace CDPAutomation.Abstracts
 {
     internal abstract class AbstractInitializeImplementation
     {
-        protected AbstractInitializeImplementation()
-        {
-            
-        }
-
-        protected AbstractInitializeImplementation(DebuggerPageResponse debuggerPageResponse)
-        {
-            
-        }
-
-        protected AbstractInitializeImplementation(ICDP cdp, DebuggerPageResponse debuggerPageResponse)
-        {
-            
-        }
-
+        protected AbstractInitializeImplementation() { }
+        protected AbstractInitializeImplementation(DebuggerPageResult debuggerPageResponse) { }
+        protected AbstractInitializeImplementation(ICDP cdp, DebuggerPageResult debuggerPageResponse) { }
     }
 }

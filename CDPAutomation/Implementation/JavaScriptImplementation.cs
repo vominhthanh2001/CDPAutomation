@@ -8,12 +8,12 @@ using CDPAutomation.Models.JavaScript;
 
 namespace CDPAutomation.Implementation
 {
-    internal class JavaScriptImplementation(ICDP cdp, DebuggerPageResponse debuggerPageResponse) : AbstractInitializeImplementation(cdp, debuggerPageResponse), IJavaScriptExecutor
+    internal class JavaScriptImplementation(ICDP cdp, DebuggerPageResult debuggerPageResponse) : AbstractInitializeImplementation(cdp, debuggerPageResponse), IJavaScriptExecutor
     {
         private readonly ICDP _cdp = cdp;
-        private readonly DebuggerPageResponse _debuggerPageResponse = debuggerPageResponse;
+        private readonly DebuggerPageResult _debuggerPageResponse = debuggerPageResponse;
 
-        public Task<object> ExecuteJavaScriptAsync(string script, bool returnValue = false)
+        public async Task<object?> ExecuteJavaScriptAsync(string script, bool returnValue = false)
         {
             CDPRequest @params = new()
             {
@@ -26,14 +26,18 @@ namespace CDPAutomation.Implementation
                 }
             };
 
-            Task<CDPResponse?> taskExecuteJavaScript =  _cdp.SendInstantAsync(@params);
-            ArgumentNullException.ThrowIfNull(taskExecuteJavaScript);
+            CDPResult? response = await _cdp.SendInstantAsync(@params);
+            ArgumentNullException.ThrowIfNull(response);
 
             if (returnValue)
             {
-                CDPResponse? response = taskExecuteJavaScript.Result;
-                ExecuteJavaScriptResult? result = response.Deserialize(JsonContext.Default.ExecuteJavaScriptResult);
-                ArgumentNullException.ThrowIfNull(result);
+                string? result = JsonHelper.GetProperty(response.Result.ToString(), "result");
+                ArgumentNullException.ThrowIfNullOrWhiteSpace(result);
+
+                ExecuteJavaScriptResult? executeJavaScriptResult = JsonHelper.Deserialize(result, JsonContext.Default.ExecuteJavaScriptResult);
+                ArgumentNullException.ThrowIfNull(executeJavaScriptResult);
+
+                return executeJavaScriptResult.Value;
             }
 
             return Task.FromResult<object>(new());

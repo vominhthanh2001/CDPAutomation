@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace CDPAutomation.Models.CDP
 {
-    public class CDPResponse
+    public class CDPResult
     {
         [JsonPropertyName("id")]
         public int Id { get; set; }

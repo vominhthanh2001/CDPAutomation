@@ -12,7 +12,7 @@ namespace CDPAutomation.Models.Page
     {
         public int Index { get; set; } = 0;
         public IPage Page { get; set; } = default!;
-        public DebuggerPageResponse DebuggerPage { get; set; } = default!;
+        public DebuggerPageResult DebuggerPage { get; set; } = default!;
         public int Port { get; set; } 
         public string IdPage => DebuggerPage?.Id ?? string.Empty;
         public bool Active { get; set; } = false;
