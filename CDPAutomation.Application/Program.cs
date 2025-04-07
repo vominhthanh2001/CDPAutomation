@@ -2,21 +2,13 @@
 using CDPAutomation.Enums.WebDriver;
 using CDPAutomation.Interfaces.Browser;
 using CDPAutomation.Interfaces.Pages;
+using CDPAutomation.Models.Browser;
 
 IBrowser browser = WebDriverFactory.CreateWebDriver(WebDriverMode.Chrome);
 await browser.StartAsync();
+IPage page = browser.PageTarget;
 
-IPage page1 = await browser.NewPageAsync();
-await page1.Javascript().ExecuteJavaScriptAsync("alert('hello world')", returnValue: false);
-
-IPage page2 = await browser.NewPageAsync();
-await page2.Javascript().ExecuteJavaScriptAsync("alert('hello world')", returnValue: false);
-
-await page1.CloseAsync();
-
-await browser.SwitchPage(0);
-await browser.SwitchPage(page2);
-await page2.Javascript().ExecuteJavaScriptAsync("alert('hello world')", returnValue: false);
+await page.Navigate().GoToUrlAsync("https://www.facebook.com/");
 
 await Task.Delay(2000);
 await browser.CloseAsync();

@@ -1,6 +1,7 @@
 ﻿using CDPAutomation.Models.Browser;
 using CDPAutomation.Models.CDP;
 using CDPAutomation.Models.JavaScript;
+using CDPAutomation.Models.Navigate;
 using CDPAutomation.Models.Page;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
@@ -33,6 +34,9 @@ namespace CDPAutomation.Helpers
     [JsonSerializable(typeof(PageTargetIdInfoParams))]
     [JsonSerializable(typeof(TargetInfoObjectResult))]
     [JsonSerializable(typeof(TargetInfoValueResult))]
+    [JsonSerializable(typeof(NavigationHistoryParams))]
+    [JsonSerializable(typeof(NavigationHistoryResult))]
+    [JsonSerializable(typeof(NavigationHistoryEntriesResult))]
     #endregion
 
     #region JavaScript
@@ -40,9 +44,17 @@ namespace CDPAutomation.Helpers
     [JsonSerializable(typeof(ExecuteJavaScriptResult))]
     #endregion
 
+    #region Navigate
+    [JsonSerializable(typeof(NavigateGoToUrlParams))]
+    [JsonSerializable(typeof(NavigateGoToUrlFrameResult))]
+    [JsonSerializable(typeof(NavigateRefreshParams))]
+    #endregion
+
     #region CDP
     [JsonSerializable(typeof(CDPRequest))]
     [JsonSerializable(typeof(CDPResponse))]
+    [JsonSerializable(typeof(CDPFinishedResponse))]
+    [JsonSerializable(typeof(CDPFinishedResponseResult))]
     [JsonSerializable(typeof(CDPError))]
     #endregion
     internal partial class JsonContext : JsonSerializerContext { }

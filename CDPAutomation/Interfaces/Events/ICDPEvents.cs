@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CDPAutomation.Interfaces.Events
 {
-    public interface CDPEvents
+    public interface ICDPEvents
     {
         public event EventHandler<string>? OnMessageReceivedResponse;
         public event EventHandler<string>? OnMessageReceivedWaitMethod;

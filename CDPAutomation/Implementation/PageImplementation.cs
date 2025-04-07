@@ -16,17 +16,30 @@ using System.Threading.Tasks;
 
 namespace CDPAutomation.Implementation
 {
-    internal class PageImplementation(ICDP cdp, DebuggerPageResponse page) : IPage
+    internal class PageImplementation : IPage
     {
-        private readonly ICDP _cdp = cdp ?? throw new ArgumentNullException(nameof(cdp));
+        private readonly ICDP _cdp;
         private readonly ICookie _cookie = default!;
         private readonly INavigate _navigate = default!;
         private readonly IWindow _window = default!;
         private readonly IRequest _request = default!;
-        private readonly IJavaScriptExecutor _javascript = new JavaScriptImplementation(cdp, page);
+        private readonly IJavaScriptExecutor _javascript = default!;
         private readonly IFindElement _findElement = default!;
 
-        public DebuggerPageResponse DebuggerPage { get; private set; } = page ?? throw new ArgumentNullException(nameof(page));
+        public PageImplementation(ICDP cdp, DebuggerPageResponse page)
+        {
+            _cdp = cdp ?? throw new ArgumentNullException(nameof(cdp));
+            _cdp.SendAsync(new CDPRequest { Method = "Page.enable" });
+            //_cdp.SendAsync(new CDPRequest { Method = "Network.enable" });
+            //_cdp.SendAsync(new CDPRequest { Method = "DOM.enable" });
+            //_cdp.SendAsync(new CDPRequest { Method = "Runtime.enable" });
+
+            _navigate = new NavigateImplementation(cdp, page);
+            _javascript = new JavaScriptImplementation(cdp, page);
+            DebuggerPage = page ?? throw new ArgumentNullException(nameof(page));
+        }
+
+        public DebuggerPageResponse DebuggerPage { get; private set; }
 
         public Task ActivateAsync()
         {

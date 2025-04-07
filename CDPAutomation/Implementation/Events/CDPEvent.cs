@@ -1,13 +1,12 @@
-﻿using CDPAutomation.Abstracts;
-using CDPAutomation.Helpers;
+﻿using CDPAutomation.Helpers;
 using CDPAutomation.Interfaces.Events;
-using CDPAutomation.Models.Browser;
+using CDPAutomation.Models.CDP;
 using System.Collections.Concurrent;
 using System.Text.Json;
 
 namespace CDPAutomation.Implementation.Events
 {
-    public class CDPEventImplementation : CDPEvents
+    public class CDPEvent : ICDPEvents
     {
         protected ConcurrentDictionary<string, TaskCompletionSource<bool>> _waitingEvents = new();
         protected ConcurrentDictionary<int, TaskCompletionSource<string>> _responseTasks = new();
@@ -19,7 +18,6 @@ namespace CDPAutomation.Implementation.Events
             {
                 if (string.IsNullOrWhiteSpace(e)) return;
 
-                Console.WriteLine(e);
                 string? id = JsonHelper.GetProperty(e, "id");
                 if (id is null) return;
 
@@ -35,6 +33,7 @@ namespace CDPAutomation.Implementation.Events
             OnMessageReceivedResponse?.Invoke(this, e);
         }
 
+
         public event EventHandler<string>? OnMessageReceivedWaitMethod;
         protected virtual void OnMessageReceivedWaitMethodEvent(string e)
         {
@@ -46,7 +45,9 @@ namespace CDPAutomation.Implementation.Events
                 if (data.RootElement.TryGetProperty("method", out var methodElement))
                 {
                     string? method = methodElement.GetString();
-                    if (method != null && _waitingEvents.TryGetValue(method, out var tcs))
+                    if (method is null) return;
+
+                    if (_waitingEvents.TryRemove(method, out var tcs))
                     {
                         tcs.TrySetResult(true);
                     }

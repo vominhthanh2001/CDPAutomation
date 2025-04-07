@@ -92,7 +92,10 @@ namespace CDPAutomation.Drivers
             _debuggerPageMainResponse = _debuggerPageResponse?.FirstOrDefault(x => x.Type == "page");
 
             //page đầu tiên khi được khởi tạo
-            IPage pageFirstInitialize = PageTarget = new PageImplementation(CDP, _debuggerPageMainResponse!);
+            CDPImplementation cdpPage = new();
+            await cdpPage.ConnectAsync(_debuggerPageMainResponse!.WebSocketDebuggerUrl);
+
+            IPage pageFirstInitialize = PageTarget = new PageImplementation(cdpPage, _debuggerPageMainResponse!);
 
             PageObjectManager.AddPage(new PageObjectModel
             {

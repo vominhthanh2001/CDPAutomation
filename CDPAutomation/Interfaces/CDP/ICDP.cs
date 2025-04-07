@@ -1,4 +1,5 @@
-﻿using CDPAutomation.Models.CDP;
+﻿using CDPAutomation.Interfaces.Events;
+using CDPAutomation.Models.CDP;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ namespace CDPAutomation.Interfaces.CDP
 
         Task SendAsync(CDPRequest? data);
         Task<CDPResponse?> SendInstantAsync(CDPRequest? data);
-        Task<bool> WaitMethodAsync(object? data);
+        Task<bool> WaitMethodAsync(string? method);
 
         Task<TaskCompletionSource<string>> GetTaskCompletionSourceAsync(int id);
     }
