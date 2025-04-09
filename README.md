@@ -53,17 +53,17 @@ IPage pageTarget = browser.PageTarget; // tab đang sử dụng
 
 await pageTarget.Navigate().GoToUrlAsync("https://www.facebook.com/");
 
-IElement? id = await pageTarget.FindElement().FindById("id"); // Tìm kiếm phần tử bằng id
-IElement? name = await pageTarget.FindElement().FindById("name"); // Tìm kiếm phần tử bằng name
-IElement? className = await pageTarget.FindElement().FindByClassName("className"); // Tìm kiếm phần tử bằng className
-IElement? xpath = await pageTarget.FindElement().FindByXPath("//input[@id='id']"); // Tìm kiếm phần tử bằng XPath
-IElement? cssSelector = await pageTarget.FindElement().FindByCssSelector("#id"); // Tìm kiếm phần tử bằng CssSelector
+IElement? id = await pageTarget.FindElement().ById("id"); // Tìm kiếm phần tử bằng id
+IElement? name = await pageTarget.FindElement().ById("name"); // Tìm kiếm phần tử bằng name
+IElement? className = await pageTarget.FindElement().ByClassName("className"); // Tìm kiếm phần tử bằng className
+IElement? xpath = await pageTarget.FindElement().ByXPath("//input[@id='id']"); // Tìm kiếm phần tử bằng XPath
+IElement? cssSelector = await pageTarget.FindElement().ByCssSelector("#id"); // Tìm kiếm phần tử bằng CssSelector
 
-List<IElement> ids = await pageTarget.FindElement().FindsById("id"); // Tìm kiếm tất cả phần tử bằng id
-List<IElement> names = await pageTarget.FindElement().FindsById("name"); // Tìm kiếm tất cả phần tử bằng name
-List<IElement> classNames = await pageTarget.FindElement().FindsByClassName("className"); // Tìm kiếm tất cả phần tử bằng className
-List<IElement> xpaths = await pageTarget.FindElement().FindsByXPath("//input[@id='id']"); // Tìm kiếm tất cả phần tử bằng XPath
-List<IElement> cssSelectors = await pageTarget.FindElement().FindsByCssSelector("#id"); // Tìm kiếm tất cả phần tử bằng CssSelector
+List<IElement> ids = await pageTarget.FindElement().BysId("id"); // Tìm kiếm tất cả phần tử bằng id
+List<IElement> names = await pageTarget.FindElement().BysId("name"); // Tìm kiếm tất cả phần tử bằng name
+List<IElement> classNames = await pageTarget.FindElement().BysClassName("className"); // Tìm kiếm tất cả phần tử bằng className
+List<IElement> xpaths = await pageTarget.FindElement().BysXPath("//input[@id='id']"); // Tìm kiếm tất cả phần tử bằng XPath
+List<IElement> cssSelectors = await pageTarget.FindElement().BysCssSelector("#id"); // Tìm kiếm tất cả phần tử bằng CssSelector
 ```
 
 ## Javascript
