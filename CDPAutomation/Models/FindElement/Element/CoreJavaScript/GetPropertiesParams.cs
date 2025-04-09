@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace CDPAutomation.Models.FindElement.Element
+namespace CDPAutomation.Models.FindElement.Element.CoreJavaScript
 {
     internal class GetPropertiesParams : RequestNodeParams
     {

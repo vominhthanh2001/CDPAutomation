@@ -1,5 +1,6 @@
 ﻿using CDPAutomation.Interfaces.FindElement.Options;
 using CDPAutomation.Models.FindElement.Element;
+using CDPAutomation.Models.FindElement.Element.CoreJavaScript;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -7,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CDPAutomation.Interfaces.FindElement
+namespace CDPAutomation.Interfaces.Element
 {
     public interface IElement
     {
@@ -23,7 +24,9 @@ namespace CDPAutomation.Interfaces.FindElement
         Task<string?> GetAttributeAsync(string attributeName);
         Task<string?> GetCssValueAsync(string cssProperty);
 
+        Task ScrollToAsync();
+
         Task<byte[]> CaptureScreenshotAsync();
-        Task<GetBoxModelResult?> GetBoundingBoxAsync();
+        Task<Rectangle?> GetBoundingBoxAsync();
     }
 }

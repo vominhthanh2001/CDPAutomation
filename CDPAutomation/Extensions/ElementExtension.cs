@@ -1,7 +1,7 @@
 ﻿using CDPAutomation.Interfaces.CDP;
 using CDPAutomation.Models.CDP;
 using CDPAutomation.Models.FindElement;
-using CDPAutomation.Models.FindElement.Element;
+using CDPAutomation.Models.FindElement.Element.CoreJavaScript;
 using System;
 using System.Collections.Generic;
 using System.Drawing;

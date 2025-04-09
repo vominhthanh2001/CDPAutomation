@@ -56,11 +56,16 @@ namespace CDPAutomation.Implementation
                     }
                     else
                     {
-                        string messageText = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                        ms.Seek(0, SeekOrigin.Begin); // đảm bảo bắt đầu đọc từ đầu
+                        string messageText = Encoding.UTF8.GetString(ms.ToArray());
+
+                        //string messageText = Encoding.UTF8.GetString(buffer, 0, result.Count);
 
                         string? id = JsonHelper.GetProperty(messageText, "id");
                         if (!string.IsNullOrWhiteSpace(id))
                             Console.WriteLine($"[RESPONSE EVENT] {messageText}\r\n");
+                        else
+                            Console.WriteLine($"[PARAMS EVENT] {messageText}\r\n");
 
                         OnMessageReceivedResponseEvent(messageText);
                         OnMessageReceivedWaitMethodEvent(messageText);

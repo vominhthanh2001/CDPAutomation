@@ -1,4 +1,5 @@
-﻿using CDPAutomation.Interfaces.Browser;
+﻿using CDPAutomation.Enums.FindElement;
+using CDPAutomation.Interfaces.Browser;
 using CDPAutomation.Interfaces.FindElement;
 using CDPAutomation.Interfaces.JavaScript;
 using CDPAutomation.Interfaces.Request;
@@ -16,7 +17,6 @@ namespace CDPAutomation.Interfaces.Pages
         IRequest Request();
         IJavaScriptExecutor Javascript();
         IFindElement FindElement();
-
         Task ActivateAsync();
         Task CloseAsync();
     }

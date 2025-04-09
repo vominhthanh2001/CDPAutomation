@@ -7,4 +7,14 @@
 		<PublishAot>true</PublishAot>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <Folder Include="Models\FindElement\Element\CoreDOM\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="Data\aero_arrow.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
 </Project>

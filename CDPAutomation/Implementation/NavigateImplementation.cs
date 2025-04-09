@@ -1,8 +1,10 @@
 ﻿using CDPAutomation.Abstracts;
+using CDPAutomation.Extensions;
 using CDPAutomation.Helpers;
 using CDPAutomation.Implementation.Events;
 using CDPAutomation.Interfaces.Browser;
 using CDPAutomation.Interfaces.CDP;
+using CDPAutomation.Interfaces.JavaScript;
 using CDPAutomation.Models.Browser;
 using CDPAutomation.Models.CDP;
 using CDPAutomation.Models.Navigate;
@@ -18,6 +20,7 @@ namespace CDPAutomation.Implementation
     internal class NavigateImplementation(ICDP cdp, DebuggerPageResult debuggerPageResponse) : AbstractInitializeImplementation(cdp, debuggerPageResponse), INavigate
     {
         private readonly ICDP _cdp = cdp;
+        private readonly IJavaScriptExecutor _javaScriptExecutor = new JavaScriptImplementation(cdp, debuggerPageResponse);
         private readonly DebuggerPageResult _debuggerPageResponse = debuggerPageResponse;
 
         public async Task GoToBackAsync(OptionNavigateModel? option = null)
@@ -108,11 +111,10 @@ namespace CDPAutomation.Implementation
 
             if (option.WaitUntilPageLoad)
             {
-                Task<bool> isWait = _cdp.WaitMethodAsync("Page.frameStoppedLoading");
-                ArgumentNullException.ThrowIfNull(isWait);
-
-                isWait.Wait(new TimeSpan(0, 0, option.Timeout));
+                await _cdp.WaitMethodAsync("Page.frameStoppedLoading").WaitAsync(new TimeSpan(0, 0, option.Timeout));
             }
+
+            await _javaScriptExecutor.SetMousePositionRandom();
         }
 
         public async Task RefreshAsync(OptionNavigateModel? option = null)

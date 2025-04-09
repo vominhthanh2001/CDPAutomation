@@ -5,11 +5,11 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace CDPAutomation.Models.FindElement.Element
+namespace CDPAutomation.Models.Page
 {
-    internal class GetBoxModelParams
+    internal class SetLifecycleEventsEnabledParams
     {
-        [JsonPropertyName("objectId")]
-        public string? ObjectId { get; set; }
+        [JsonPropertyName("enabled")]
+        public bool Enabled { get; set; }
     }
 }

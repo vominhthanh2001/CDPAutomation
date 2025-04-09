@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CDPAutomation.Models.FindElement.Element
+namespace CDPAutomation.Models.FindElement.Element.CoreJavaScript
 {
     internal class InternalPropertiesValue
     {

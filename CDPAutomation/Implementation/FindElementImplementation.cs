@@ -1,84 +1,78 @@
 ﻿using CDPAutomation.Abstracts;
 using CDPAutomation.Helpers;
 using CDPAutomation.Interfaces.CDP;
+using CDPAutomation.Interfaces.Element;
 using CDPAutomation.Interfaces.FindElement;
 using CDPAutomation.Interfaces.JavaScript;
-using CDPAutomation.Interfaces.Request;
 using CDPAutomation.Models.Browser;
 using CDPAutomation.Models.CDP;
 using CDPAutomation.Models.FindElement;
-using CDPAutomation.Models.FindElement.Element;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
+using CDPAutomation.Models.FindElement.Element.CoreJavaScript;
 
 namespace CDPAutomation.Implementation
 {
-    internal class FindElementImplementation(ICDP cdp, IJavaScriptExecutor javaScriptExecutor, DebuggerPageResult debuggerPageResponse) : AbstractInitializeImplementation(cdp, debuggerPageResponse), IFindElement
+    internal class FindElementImplementation(ICDP cdp, DebuggerPageResult debuggerPageResponse) : AbstractInitializeImplementation(cdp, debuggerPageResponse), IFindElement
     {
         private readonly ICDP _cdp = cdp;
-        private readonly IJavaScriptExecutor _javaScriptExecutor = javaScriptExecutor;
+        private readonly IJavaScriptExecutor _javaScriptExecutor = new JavaScriptImplementation(cdp, debuggerPageResponse);
         private readonly DebuggerPageResult _debuggerPageResponse = debuggerPageResponse;
 
-        public async Task<IElement?> FindById(string id)
+        public async Task<IElement?> ById(string id)
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(id);
 
-            List<IElement> elements = await FindsById(id);
+            List<IElement> elements = await BysId(id);
             ArgumentNullException.ThrowIfNull(elements);
 
             IElement? element = elements.FirstOrDefault();
             return element;
         }
 
-        public async Task<IElement?> FindByName(string name)
+        public async Task<IElement?> ByName(string name)
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(name);
 
-            List<IElement> elements = await FindsByName(name);
+            List<IElement> elements = await BysName(name);
             ArgumentNullException.ThrowIfNull(elements);
 
             IElement? element = elements.FirstOrDefault();
             return element;
         }
 
-        public async Task<IElement?> FindByClassName(string className)
+        public async Task<IElement?> ByClassName(string className)
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(className);
 
-            List<IElement> elements = await FindsByClassName(className);
+            List<IElement> elements = await BysClassName(className);
             ArgumentNullException.ThrowIfNull(elements);
 
             IElement? element = elements.FirstOrDefault();
             return element;
         }
 
-        public async Task<IElement?> FindByCssSelector(string cssSelector)
+        public async Task<IElement?> ByCssSelector(string cssSelector)
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(cssSelector);
 
-            List<IElement> elements = await FindsByCssSelector(cssSelector);
+            List<IElement> elements = await BysCssSelector(cssSelector);
             ArgumentNullException.ThrowIfNull(elements);
 
             IElement? element = elements.FirstOrDefault();
             return element;
         }
 
-        public async Task<IElement?> FindByXPath(string xpath)
+        public async Task<IElement?> ByXPath(string xpath)
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(xpath);
 
-            List<IElement> elements = await FindsByXPath(xpath);
+            List<IElement> elements = await BysXPath(xpath);
             ArgumentNullException.ThrowIfNull(elements);
 
             IElement? element = elements.FirstOrDefault();
             return element;
         }
 
-        public async Task<List<IElement>> FindsById(string id)
+        public async Task<List<IElement>> BysId(string id)
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(id);
 
@@ -102,7 +96,7 @@ namespace CDPAutomation.Implementation
             return elements;
         }
 
-        public async Task<List<IElement>> FindsByName(string name)
+        public async Task<List<IElement>> BysName(string name)
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(name);
 
@@ -126,7 +120,7 @@ namespace CDPAutomation.Implementation
             return elements;
         }
 
-        public async Task<List<IElement>> FindsByClassName(string className)
+        public async Task<List<IElement>> BysClassName(string className)
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(className);
             CDPRequest getNodeList = new()
@@ -149,7 +143,7 @@ namespace CDPAutomation.Implementation
             return elements;
         }
 
-        public async Task<List<IElement>> FindsByCssSelector(string cssSelector)
+        public async Task<List<IElement>> BysCssSelector(string cssSelector)
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(cssSelector);
             CDPRequest getNodeList = new()
@@ -172,7 +166,7 @@ namespace CDPAutomation.Implementation
             return elements;
         }
 
-        public async Task<List<IElement>> FindsByXPath(string xpath)
+        public async Task<List<IElement>> BysXPath(string xpath)
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(xpath);
             CDPRequest getNodeList = new()

@@ -1,4 +1,6 @@
-﻿using CDPAutomation.Helpers;
+﻿using CDPAutomation.Enums.FindElement;
+using CDPAutomation.Extensions;
+using CDPAutomation.Helpers;
 using CDPAutomation.Interfaces.Browser;
 using CDPAutomation.Interfaces.CDP;
 using CDPAutomation.Interfaces.FindElement;
@@ -11,6 +13,7 @@ using CDPAutomation.Models.Page;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -24,19 +27,21 @@ namespace CDPAutomation.Implementation
         private readonly IWindow _window = default!;
         private readonly IRequest _request = default!;
         private readonly IJavaScriptExecutor _javascript = default!;
-        private readonly IFindElement _findElement = default!;
+        private readonly IFindElement _findElementCoreJavaScript = default!;
 
         public PageImplementation(ICDP cdp, DebuggerPageResult page)
         {
             _cdp = cdp ?? throw new ArgumentNullException(nameof(cdp));
             _cdp.SendAsync(new CDPRequest { Method = "Page.enable" });
-            _cdp.SendAsync(new CDPRequest { Method = "Network.enable" });
-            _cdp.SendAsync(new CDPRequest { Method = "DOM.enable" });
-            _cdp.SendAsync(new CDPRequest { Method = "Runtime.enable" });
+            //_cdp.SendAsync(new CDPRequest { Method = "Network.enable" });
+            //_cdp.SendAsync(new CDPRequest { Method = "DOM.enable" });
+            //_cdp.SendAsync(new CDPRequest { Method = "Runtime.enable" });
+            _cdp.SendAsync(new CDPRequest { Method = "Page.setLifecycleEventsEnabled", Params = new SetLifecycleEventsEnabledParams { Enabled = true } });
 
-            _navigate = new NavigateImplementation(cdp, page);
             _javascript = new JavaScriptImplementation(cdp, page);
-            _findElement = new FindElementImplementation(cdp, _javascript, page);
+            _navigate = new NavigateImplementation(cdp, page);
+            _findElementCoreJavaScript = new FindElementImplementation(cdp, page);
+
             DebuggerPage = page ?? throw new ArgumentNullException(nameof(page));
         }
 
@@ -75,7 +80,7 @@ namespace CDPAutomation.Implementation
         }
 
         public ICookie Cookies() => _cookie;
-        public IFindElement FindElement() => _findElement;
+        public IFindElement FindElement() => _findElementCoreJavaScript;
         public IJavaScriptExecutor Javascript() => _javascript;
         public INavigate Navigate() => _navigate;
         public IRequest Request() => _request;

@@ -1,22 +1,20 @@
 ﻿using CDPAutomation.Abstracts;
+using CDPAutomation.Enums.FindElement;
 using CDPAutomation.Extensions;
 using CDPAutomation.Helpers;
+using CDPAutomation.Implementation.Actions;
+using CDPAutomation.Interfaces.Actions;
 using CDPAutomation.Interfaces.CDP;
-using CDPAutomation.Interfaces.FindElement;
+using CDPAutomation.Interfaces.Element;
 using CDPAutomation.Interfaces.FindElement.Options;
 using CDPAutomation.Interfaces.JavaScript;
 using CDPAutomation.Models.Browser;
 using CDPAutomation.Models.CDP;
 using CDPAutomation.Models.FindElement;
 using CDPAutomation.Models.FindElement.Element;
-using Microsoft.VisualBasic.FileIO;
-using System;
-using System.Collections.Generic;
+using CDPAutomation.Models.FindElement.Element.CoreJavaScript;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static CDPAutomation.Models.FindElement.Element.CaptureScreenshotParams;
+using static CDPAutomation.Models.FindElement.Element.CoreJavaScript.CaptureScreenshotParams;
 
 namespace CDPAutomation.Implementation
 {
@@ -32,21 +30,43 @@ namespace CDPAutomation.Implementation
         private readonly DebuggerPageResult _debuggerPageResponse = debuggerPageResponse;
         private readonly NodeProperty _nodeProperty = nodeProperty;
         private readonly RequestNodeResult? _requestNodeResult = requestNodeResult;
+        private readonly MouseActionsImplementation _mouseActions = new(cdp, nodeProperty);
+        private readonly KeyboardActionsImplementation _keyboardActions = new(cdp, nodeProperty);
 
         public async Task ClickAsync(OptionClick? option = null)
         {
+            option ??= new();
+
             ArgumentNullException.ThrowIfNull(_nodeProperty);
             ArgumentNullException.ThrowIfNull(_nodeProperty.Value);
 
-            await _javaScriptExecutor.ExecuteJavaScriptAsync(@$"document.querySelector(`{_nodeProperty.Value.Description}`).click()", false);
+            await ScrollToAsync();
+
+            Rectangle? rectangle = await GetBoundingBoxAsync();
+            ArgumentNullException.ThrowIfNull(rectangle);
+
+            Rectangle startPosition = await _javaScriptExecutor.GetMousePosition();
+            Rectangle endPosition = option.PositionInElement.GetEndPosition(rectangle.Value);
+
+            await _mouseActions.ClickAsync(startPosition, endPosition, option.MouseClick, option.MouseMove);
         }
 
         public async Task SendKeysAsync(string value, OptionSendKeys? option = null)
         {
+            option ??= new();
+
             ArgumentNullException.ThrowIfNull(_nodeProperty);
             ArgumentNullException.ThrowIfNull(_nodeProperty.Value);
 
-            await _javaScriptExecutor.ExecuteJavaScriptAsync(@$"document.querySelector(`{_nodeProperty.Value.Description}`).value = '{value}'", false);
+            await ScrollToAsync();
+
+            Rectangle? rectangle = await GetBoundingBoxAsync();
+            ArgumentNullException.ThrowIfNull(rectangle);
+
+            Rectangle startPosition = await _javaScriptExecutor.GetMousePosition();
+            Rectangle endPosition = option.PositionInElement.GetEndPosition(rectangle.Value);
+
+            await _keyboardActions.SendKeysAsync(startPosition, endPosition, value, option.Keyboard);
         }
 
         public async Task ClearAsync(OptionClear? option = null)
@@ -191,17 +211,45 @@ namespace CDPAutomation.Implementation
             return value;
         }
 
+        public async Task ScrollToAsync()
+        {
+            while (await IsDisplayedAsync() == false)
+            {
+                await _javaScriptExecutor.ExecuteJavaScriptAsync($@"
+                    window.scrollTo({{
+                        top: 50,
+                        left: 0,
+                        behavior: 'smooth'
+                    }});
+                ");
+
+                await Task.Delay(new Random().Next(100, 500));
+            }
+
+            for (int i = 0; i < 3; i++)
+            {
+                await _javaScriptExecutor.ExecuteJavaScriptAsync($@"
+                    window.scrollTo({{
+                        top: 50,
+                        left: 0,
+                        behavior: 'smooth'
+                    }});
+                ");
+
+                await Task.Delay(new Random().Next(100, 500));
+            }
+        }
+
         public async Task<byte[]> CaptureScreenshotAsync()
         {
             ArgumentNullException.ThrowIfNull(_nodeProperty);
             ArgumentNullException.ThrowIfNull(_nodeProperty.Value);
             ArgumentNullException.ThrowIfNull(_nodeProperty.Value.ObjectId);
 
-            GetBoxModelResult? getBoxModelResult = await GetBoundingBoxAsync();
-            ArgumentNullException.ThrowIfNull(getBoxModelResult);
-            ArgumentNullException.ThrowIfNull(getBoxModelResult.Content);
+            Rectangle? rectangle = await GetBoundingBoxAsync();
+            ArgumentNullException.ThrowIfNull(rectangle);
 
-            Rectangle rectangle = getBoxModelResult.Content.ToRectangle();
+            Rectangle rectanglevalue = rectangle.Value;
 
             CDPRequest @params = new()
             {
@@ -211,10 +259,10 @@ namespace CDPAutomation.Implementation
                     Format = "png",
                     Clip = new ClipRequestModel
                     {
-                        X = rectangle.X,
-                        Y = rectangle.Y,
-                        Width = rectangle.Width,
-                        Height = rectangle.Height,
+                        X = rectanglevalue.X,
+                        Y = rectanglevalue.Y,
+                        Width = rectanglevalue.Width,
+                        Height = rectanglevalue.Height,
                         Scale = 1.0
                     }
                 }
@@ -230,32 +278,36 @@ namespace CDPAutomation.Implementation
             return imageBytes;
         }
 
-        public async Task<GetBoxModelResult?> GetBoundingBoxAsync()
+        public async Task<Rectangle?> GetBoundingBoxAsync()
         {
             ArgumentNullException.ThrowIfNull(_nodeProperty);
             ArgumentNullException.ThrowIfNull(_nodeProperty.Value);
             ArgumentNullException.ThrowIfNull(_nodeProperty.Value.ObjectId);
 
-            Console.WriteLine($"ObjectId: {_nodeProperty.Value.ObjectId}");
+            object? rectObject = await _javaScriptExecutor.ExecuteJavaScriptAsync($@"
+                (function() {{
+                    let element = document.querySelector(`{_nodeProperty.Value.Description}`);
+                    if (!element) return null;
+                    const rect = element.getBoundingClientRect();
+                    return {{
+                        x: rect.x,
+                        y: rect.y,
+                        width: rect.width,
+                        height: rect.height
+                    }};
+                }})();
+            ", true);
 
-            CDPRequest @params = new()
-            {
-                Method = "DOM.getBoxModel",
-                Params = new GetBoxModelParams
-                {
-                    ObjectId = _nodeProperty.Value.ObjectId
-                }
-            };
+            ArgumentNullException.ThrowIfNull(rectObject);
 
-            CDPResult? response = await _cdp.SendInstantAsync(@params);
-            ArgumentNullException.ThrowIfNull(response);
-            ArgumentNullException.ThrowIfNull(response.Result);
+            string? rectString = rectObject.ToString();
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(rectString);
 
-            string? modelResponse = JsonHelper.GetProperty(response.Result.ToString(), "model");
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(modelResponse);
+            ElementRectangleModel? rect = JsonHelper.Deserialize(rectString, JsonContext.Default.ElementRectangleModel);
+            ArgumentNullException.ThrowIfNull(rect);
 
-            GetBoxModelResult? getBoxModelResult = JsonHelper.Deserialize(modelResponse, JsonContext.Default.GetBoxModelResult);
-            return getBoxModelResult;
+            Rectangle rectangle = rect.ToRectangle();
+            return rectangle;
         }
     }
 }

@@ -13,7 +13,16 @@ namespace CDPAutomation.Abstracts
     internal abstract class AbstractInitializeImplementation
     {
         protected AbstractInitializeImplementation() { }
-        protected AbstractInitializeImplementation(DebuggerPageResult debuggerPageResponse) { }
-        protected AbstractInitializeImplementation(ICDP cdp, DebuggerPageResult debuggerPageResponse) { }
+        
+        protected AbstractInitializeImplementation(DebuggerPageResult debuggerPageResponse)
+        {
+            _ = debuggerPageResponse;
+        }
+
+        protected AbstractInitializeImplementation(ICDP cdp, DebuggerPageResult debuggerPageResponse)
+        {
+            _ = cdp;
+            _ = debuggerPageResponse;
+        }
     }
 }

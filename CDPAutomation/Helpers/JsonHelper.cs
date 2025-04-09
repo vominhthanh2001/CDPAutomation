@@ -2,18 +2,22 @@
 using CDPAutomation.Models.CDP;
 using CDPAutomation.Models.FindElement;
 using CDPAutomation.Models.FindElement.Element;
+using CDPAutomation.Models.FindElement.Element.CoreJavaScript;
 using CDPAutomation.Models.JavaScript;
 using CDPAutomation.Models.Navigate;
 using CDPAutomation.Models.Page;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
-using static CDPAutomation.Models.FindElement.Element.CaptureScreenshotParams;
+using static CDPAutomation.Models.FindElement.Element.CoreJavaScript.CaptureScreenshotParams;
 
 namespace CDPAutomation.Helpers
 {
     [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(Rectangle))]
     [JsonSerializable(typeof(bool))]
     [JsonSerializable(typeof(int))]
     [JsonSerializable(typeof(string))]
@@ -40,6 +44,7 @@ namespace CDPAutomation.Helpers
     [JsonSerializable(typeof(NavigationHistoryParams))]
     [JsonSerializable(typeof(NavigationHistoryResult))]
     [JsonSerializable(typeof(NavigationHistoryEntriesResult))]
+    [JsonSerializable(typeof(SetLifecycleEventsEnabledParams))]
     #endregion
 
     #region JavaScript
@@ -66,12 +71,15 @@ namespace CDPAutomation.Helpers
     [JsonSerializable(typeof(NodeProperty))]
     [JsonSerializable(typeof(RequestNodeParams))]
     [JsonSerializable(typeof(RequestNodeResult))]
-    [JsonSerializable(typeof(GetBoxModelParams))]
-    [JsonSerializable(typeof(GetBoxModelResult))]
     [JsonSerializable(typeof(DispatchMouseEventParams))]
     [JsonSerializable(typeof(DispatchKeyEventParams))]
     [JsonSerializable(typeof(CaptureScreenshotParams))]
     [JsonSerializable(typeof(ClipRequestModel))]
+    [JsonSerializable(typeof(ElementRectangleModel))]
+    #endregion
+
+    #region Actions
+    [JsonSerializable(typeof(DispatchMouseEventParams))]
     #endregion
 
     #region CDP
@@ -86,7 +94,8 @@ namespace CDPAutomation.Helpers
         private static readonly JsonSerializerOptions _options = new()
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
         };
 
         private static readonly JsonContext _context = new(_options);

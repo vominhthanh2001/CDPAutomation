@@ -1,25 +1,26 @@
 ﻿using CDPAutomation.Drivers;
 using CDPAutomation.Enums.WebDriver;
 using CDPAutomation.Interfaces.Browser;
-using CDPAutomation.Interfaces.FindElement;
+using CDPAutomation.Interfaces.Element;
+using CDPAutomation.Interfaces.JavaScript;
 using CDPAutomation.Interfaces.Pages;
+using CDPAutomation.Models.Browser;
+using System.Web;
 
 IBrowser browser = WebDriverFactory.CreateWebDriver(WebDriverMode.Chrome);
 await browser.StartAsync(); //Khởi tạo trình duyệt
 
 IPage pageTarget = browser.PageTarget; // tab đang sử dụng
 
-await pageTarget.Navigate().GoToUrlAsync("https://www.facebook.com/"); // Đi đến trang facebook
+await pageTarget.Navigate().GoToUrlAsync("https://www.facebook.com/", option: new OptionNavigateModel
+{
+    Timeout = 10
+});
 
-IElement email = await pageTarget.FindElement().FindById("email") ?? throw new Exception("Element not found"); // Tìm kiếm phần tử bằng ID
-await email.SendKeysAsync("username"); // Nhập vào ô email
+IElement email = await pageTarget.FindElement().ById("email") ?? throw new Exception("Element not found");
+await email.SendKeysAsync("86gv86f6fr6g");
 
-IElement password = await pageTarget.FindElement().FindById("pass") ?? throw new Exception("Element not found"); // Tìm kiếm phần tử bằng ID
-await password.SendKeysAsync("password"); // Nhập vào ô password
-
-IElement loginButton = await pageTarget.FindElement().FindByName("login") ?? throw new Exception("Element not found"); // Tìm kiếm phần tử bằng Name
-await loginButton.ClickAsync(); // Nhấn nút đăng nhập
-
-await Task.Delay(10000);
+IElement password = await pageTarget.FindElement().ById("pass") ?? throw new Exception("Element not found");
+await password.SendKeysAsync("n348gj43n5re8gjrg");
 
 Console.ReadLine();
